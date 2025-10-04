@@ -1,66 +1,10 @@
 [
   {
     "id": 1,
-    "name": "Not Among Us",
-    "icon": "https://images.unsplash.com/photo-1511512578047-dfb367046420?w=100&h=100&fit=crop",
-    "popularity": ["hot", "popular"],
-    "categories": ["multiplayer", "action"],
-    "gameLink": "https://example.com/among-us"
+    "name": "2048",
+    "icon": "https://github.com/3kh0/3kh0-lite/blob/main/projects/2048/favicon.ico",
+    "popularity": [""],
+    "categories": ["classic", "puzzle"],
+    "gameLink": "https://lite.3kh0.net/projects/2048/"
   },
-  {
-    "id": 2,
-    "name": "Minecraft",
-    "icon": "https://images.unsplash.com/photo-1578632767115-351597cf2477?w=100&h=100&fit=crop",
-    "popularity": ["popular", "trending"],
-    "categories": ["sandbox", "multiplayer"],
-    "gameLink": "https://example.com/minecraft"
-  },
-  {
-    "id": 3,
-    "name": "Call of Duty",
-    "icon": "https://images.unsplash.com/photo-1552820728-8b83bb6b773f?w=100&h=100&fit=crop",
-    "popularity": ["hot", "new"],
-    "categories": ["shooter", "multiplayer", "action"],
-    "gameLink": "https://example.com/cod"
-  },
-  {
-    "id": 4,
-    "name": "Fortnite",
-    "icon": "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=100&h=100&fit=crop",
-    "popularity": ["popular"],
-    "categories": ["shooter", "multiplayer"],
-    "gameLink": "https://example.com/fortnite"
-  },
-  {
-    "id": 5,
-    "name": "Roblox",
-    "icon": "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=100&h=100&fit=crop",
-    "popularity": ["trending", "hot"],
-    "categories": ["sandbox", "multiplayer"],
-    "gameLink": "https://example.com/roblox"
-  },
-  {
-    "id": 6,
-    "name": "Chess",
-    "icon": "https://images.unsplash.com/photo-1586165368502-1bad197a6461?w=100&h=100&fit=crop",
-    "popularity": ["new"],
-    "categories": ["strategy", "puzzle"],
-    "gameLink": "https://example.com/chess"
-  },
-  {
-    "id": 7,
-    "name": "Subway Surfers",
-    "icon": "https://images.unsplash.com/photo-1511882150382-421056c89033?w=100&h=100&fit=crop",
-    "popularity": ["popular"],
-    "categories": ["action", "arcade"],
-    "gameLink": "https://example.com/subway-surfers"
-  },
-  {
-    "id": 8,
-    "name": "Slope",
-    "icon": "https://images.unsplash.com/photo-1519681393784-d120267933ba?w=100&h=100&fit=crop",
-    "popularity": ["hot"],
-    "categories": ["arcade", "action"],
-    "gameLink": "https://example.com/slope"
-  }
 ]
