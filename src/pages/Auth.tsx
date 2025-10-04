@@ -15,13 +15,13 @@ const Auth = () => {
   const { toast } = useToast();
   const [isLogin, setIsLogin] = useState(true);
   const [username, setUsername] = useState("");
-  const [secretKey, setSecretKey] = useState("");
-  const [showSecretKey, setShowSecretKey] = useState(false);
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   const handleLogin = async () => {
-    if (!username || !secretKey) {
+    if (!username || !password) {
       toast({
         title: "Error",
         description: "Please fill in all fields",
@@ -33,7 +33,7 @@ const Auth = () => {
     setIsLoading(true);
     try {
       const { data, error } = await supabase.functions.invoke('auth-login', {
-        body: { username, secretKey }
+        body: { username, password }
       });
 
       if (error) throw error;
@@ -96,22 +96,22 @@ const Auth = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="secretKey">Secret Key</Label>
+                <Label htmlFor="password">Password</Label>
                 <div className="relative">
                   <Input
-                    id="secretKey"
-                    type={showSecretKey ? "text" : "password"}
-                    placeholder="Enter your secret key"
-                    value={secretKey}
-                    onChange={(e) => setSecretKey(e.target.value)}
+                    id="password"
+                    type={showPassword ? "text" : "password"}
+                    placeholder="Enter your password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
                     className="bg-background border-border pr-10"
                   />
                   <button
                     type="button"
-                    onClick={() => setShowSecretKey(!showSecretKey)}
+                    onClick={() => setShowPassword(!showPassword)}
                     className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                   >
-                    {showSecretKey ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
                 </div>
               </div>

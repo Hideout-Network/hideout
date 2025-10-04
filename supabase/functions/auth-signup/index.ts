@@ -12,14 +12,14 @@ serve(async (req) => {
   }
 
   try {
-    const { username, secretKey } = await req.json();
+    const { username, password } = await req.json();
 
     console.log('Signup attempt for username:', username);
 
     // Validate inputs
-    if (!username || !secretKey) {
+    if (!username || !password) {
       return new Response(
-        JSON.stringify({ error: 'Username and secret key are required' }),
+        JSON.stringify({ error: 'Username and password are required' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
@@ -40,19 +40,19 @@ serve(async (req) => {
       );
     }
 
-    if (secretKey.length < 8) {
+    if (password.length < 8) {
       return new Response(
-        JSON.stringify({ error: 'Secret key must be at least 8 characters' }),
+        JSON.stringify({ error: 'Password must be at least 8 characters' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    // Hash the secret key
+    // Hash the password
     const encoder = new TextEncoder();
-    const data = encoder.encode(secretKey);
+    const data = encoder.encode(password);
     const hashBuffer = await crypto.subtle.digest('SHA-256', data);
     const hashArray = Array.from(new Uint8Array(hashBuffer));
-    const secretKeyHash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    const passwordHash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 
     // Create Supabase client
     const supabase = createClient(
@@ -77,7 +77,7 @@ serve(async (req) => {
     // Create user
     const { data: newUser, error: insertError } = await supabase
       .from('users')
-      .insert({ username, secret_key_hash: secretKeyHash })
+      .insert({ username, password_hash: passwordHash })
       .select()
       .single();
 

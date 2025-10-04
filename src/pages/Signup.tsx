@@ -22,13 +22,13 @@ const Signup = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [username, setUsername] = useState("");
-  const [secretKey, setSecretKey] = useState("");
-  const [showSecretKey, setShowSecretKey] = useState(false);
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [showAgreement, setShowAgreement] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = () => {
-    if (!username || !secretKey) {
+    if (!username || !password) {
       toast({
         title: "Error",
         description: "Please fill in all fields",
@@ -55,10 +55,10 @@ const Signup = () => {
       return;
     }
 
-    if (secretKey.length < 8) {
+    if (password.length < 8) {
       toast({
         title: "Error",
-        description: "Secret key must be at least 8 characters",
+        description: "Password must be at least 8 characters",
         variant: "destructive",
       });
       return;
@@ -71,7 +71,7 @@ const Signup = () => {
     setIsLoading(true);
     try {
       const { data, error } = await supabase.functions.invoke('auth-signup', {
-        body: { username, secretKey }
+        body: { username, password }
       });
 
       if (error) throw error;
@@ -86,7 +86,7 @@ const Signup = () => {
         return;
       }
 
-      localStorage.setItem('hideout_user', JSON.stringify({ ...data.user, secretKey }));
+      localStorage.setItem('hideout_user', JSON.stringify({ ...data.user, password }));
 
       toast({
         title: "Success",
@@ -135,26 +135,26 @@ const Signup = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="secretKey">Secret Key (min 8 characters)</Label>
+                <Label htmlFor="password">Password (min 8 characters)</Label>
                 <div className="relative">
                   <Input
-                    id="secretKey"
-                    type={showSecretKey ? "text" : "password"}
-                    placeholder="Create a secure secret key"
-                    value={secretKey}
-                    onChange={(e) => setSecretKey(e.target.value)}
+                    id="password"
+                    type={showPassword ? "text" : "password"}
+                    placeholder="Create a secure password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
                     className="bg-background border-border pr-10"
                   />
                   <button
                     type="button"
-                    onClick={() => setShowSecretKey(!showSecretKey)}
+                    onClick={() => setShowPassword(!showPassword)}
                     className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                   >
-                    {showSecretKey ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
                 </div>
                 <p className="text-xs text-yellow-500">
-                  ⚠️ Keep your secret key safe! If you lose it, you cannot recover your account.
+                  ⚠️ Keep your password safe! If you lose it, you cannot recover your account.
                 </p>
               </div>
 
@@ -187,14 +187,14 @@ const Signup = () => {
                     <li>Not share your account credentials with others</li>
                     <li>Accept that you are solely responsible for your account security</li>
                     <li className="text-yellow-500 font-medium">Accounts inactive for 2 weeks will be automatically deleted</li>
-                    <li className="text-destructive font-medium">If you lose your secret key or account access, it is completely your fault and not ours. We cannot recover lost accounts.</li>
+                    <li className="text-destructive font-medium">If you lose your password or account access, it is completely your fault and not ours. We cannot recover lost accounts.</li>
                   </ul>
                 </div>
 
                 <div>
                   <h3 className="font-bold text-foreground mb-2">Privacy Policy</h3>
                   <ul className="list-disc list-inside text-sm space-y-1">
-                    <li>We only store your username and encrypted secret key</li>
+                    <li>We only store your username and encrypted password</li>
                     <li>Your data is used solely for account authentication</li>
                     <li>We do not share your information with third parties</li>
                     <li>You can delete your account at any time</li>

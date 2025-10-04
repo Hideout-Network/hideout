@@ -21,12 +21,12 @@ const Terms = () => {
                 <h2 className="text-2xl font-bold mb-3">2. Account Security</h2>
                 <p className="mb-2"><strong className="text-destructive">IMPORTANT:</strong> You are solely responsible for:</p>
                 <ul className="list-disc list-inside space-y-1 ml-4">
-                  <li>Keeping your secret key secure and confidential</li>
+                  <li>Keeping your password secure and confidential</li>
                   <li>All activities that occur under your account</li>
                   <li>Any loss of access to your account</li>
                 </ul>
                 <p className="mt-3 text-destructive font-medium">
-                  ⚠️ If you lose your secret key or account access, it is completely your fault and not ours. We cannot and will not recover lost accounts under any circumstances.
+                  ⚠️ If you lose your password or account access, it is completely your fault and not ours. We cannot and will not recover lost accounts under any circumstances.
                 </p>
               </section>
 
@@ -62,7 +62,7 @@ const Terms = () => {
                 <p className="mb-2">Hideout Network and its operators:</p>
                 <ul className="list-disc list-inside space-y-1 ml-4">
                   <li>Are not liable for any data loss, including account deletion</li>
-                  <li>Are not responsible for lost or forgotten secret keys</li>
+                  <li>Are not responsible for lost or forgotten passwords</li>
                   <li>Provide the service "as is" without warranties of any kind</li>
                   <li>Are not liable for any damages arising from use of the service</li>
                 </ul>

@@ -12,24 +12,24 @@ serve(async (req) => {
   }
 
   try {
-    const { username, secretKey } = await req.json();
+    const { username, password } = await req.json();
 
     console.log('Login attempt for username:', username);
 
     // Validate inputs
-    if (!username || !secretKey) {
+    if (!username || !password) {
       return new Response(
-        JSON.stringify({ error: 'Username and secret key are required' }),
+        JSON.stringify({ error: 'Username and password are required' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    // Hash the secret key
+    // Hash the password
     const encoder = new TextEncoder();
-    const data = encoder.encode(secretKey);
+    const data = encoder.encode(password);
     const hashBuffer = await crypto.subtle.digest('SHA-256', data);
     const hashArray = Array.from(new Uint8Array(hashBuffer));
-    const secretKeyHash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    const passwordHash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 
     // Create Supabase client
     const supabase = createClient(
@@ -42,13 +42,13 @@ serve(async (req) => {
       .from('users')
       .select('*')
       .eq('username', username)
-      .eq('secret_key_hash', secretKeyHash)
+      .eq('password_hash', passwordHash)
       .single();
 
     if (selectError || !user) {
       console.log('Invalid credentials for username:', username);
       return new Response(
-        JSON.stringify({ error: 'Invalid username or secret key' }),
+        JSON.stringify({ error: 'Invalid username or password' }),
         { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
@@ -62,7 +62,7 @@ serve(async (req) => {
     console.log('User logged in successfully:', user.id);
 
     return new Response(
-      JSON.stringify({ user: { id: user.id, username: user.username, secretKey } }),
+      JSON.stringify({ user: { id: user.id, username: user.username, password } }),
       { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
 

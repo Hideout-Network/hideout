@@ -21,7 +21,7 @@ const Account = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [user, setUser] = useState<any>(null);
-  const [showSecretKey, setShowSecretKey] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
 
@@ -97,19 +97,19 @@ const Account = () => {
 
               <div className="p-4 bg-background rounded-lg border border-border">
                 <div className="flex items-center justify-between mb-1">
-                  <h3 className="text-sm font-medium text-muted-foreground">Secret Key</h3>
+                  <h3 className="text-sm font-medium text-muted-foreground">Password</h3>
                   <button
-                    onClick={() => setShowSecretKey(!showSecretKey)}
+                    onClick={() => setShowPassword(!showPassword)}
                     className="text-primary hover:text-primary/80"
                   >
-                    {showSecretKey ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
                 </div>
                 <p className="text-xl font-mono text-foreground break-all">
-                  {showSecretKey ? user.secretKey : '••••••••••••••••'}
+                  {showPassword ? user.password : '••••••••••••••••'}
                 </p>
                 <p className="text-xs text-yellow-500 mt-2">
-                  ⚠️ Keep this secret! If you lose it, you cannot recover your account.
+                  ⚠️ Keep this safe! If you lose it, you cannot recover your account.
                 </p>
               </div>
 
@@ -148,7 +148,7 @@ const Account = () => {
             <AlertDialogHeader>
               <AlertDialogTitle>Logout</AlertDialogTitle>
               <AlertDialogDescription>
-                Make sure you remember your username and secret key before logging out.
+                Make sure you remember your username and password before logging out.
                 You will need them to log back in.
               </AlertDialogDescription>
             </AlertDialogHeader>

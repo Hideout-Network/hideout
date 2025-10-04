@@ -17,7 +17,7 @@ const Privacy = () => {
                 <p className="mb-2">We collect minimal information necessary to provide our service:</p>
                 <ul className="list-disc list-inside space-y-1 ml-4">
                   <li>Username (chosen by you during signup)</li>
-                  <li>Secret key (encrypted and hashed for security)</li>
+                  <li>Password (encrypted and hashed for security)</li>
                   <li>Last activity timestamp (to enforce inactive account deletion)</li>
                   <li>Game favorites (optional, stored only if you use this feature)</li>
                 </ul>
@@ -38,13 +38,13 @@ const Privacy = () => {
                 <h2 className="text-2xl font-bold mb-3">3. Data Security</h2>
                 <p className="mb-2">We take security seriously:</p>
                 <ul className="list-disc list-inside space-y-1 ml-4">
-                  <li>Secret keys are encrypted using industry-standard hashing (SHA-256)</li>
-                  <li>We never store your secret key in plain text</li>
+                  <li>Passwords are encrypted using industry-standard hashing (SHA-256)</li>
+                  <li>We never store your password in plain text</li>
                   <li>Data is stored securely using Supabase infrastructure</li>
-                  <li>We cannot recover your secret key if you lose it</li>
+                  <li>We cannot recover your password if you lose it</li>
                 </ul>
                 <p className="mt-3 text-yellow-500 font-medium">
-                  ⚠️ You are responsible for keeping your secret key safe. We cannot help you recover a lost secret key.
+                  ⚠️ You are responsible for keeping your password safe. We cannot help you recover a lost password.
                 </p>
               </section>
 
@@ -64,7 +64,7 @@ const Privacy = () => {
                 <ul className="list-disc list-inside space-y-1 ml-4">
                   <li className="font-medium text-yellow-500">Accounts inactive for 2 weeks are automatically and permanently deleted</li>
                   <li>You can manually delete your account at any time from the Account page</li>
-                  <li>When an account is deleted, all associated data (username, secret key hash, favorites) is permanently removed</li>
+                  <li>When an account is deleted, all associated data (username, password hash, favorites) is permanently removed</li>
                   <li>Deleted data cannot be recovered</li>
                 </ul>
               </section>
