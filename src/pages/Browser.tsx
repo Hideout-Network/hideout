@@ -99,38 +99,44 @@ const Browser = () => {
       return tab;
     }));
 
-    // Add to browser history
-    setBrowserHistory(prev => [{
-      url,
-      title: new URL(url).hostname,
-      timestamp: Date.now()
-    }, ...prev.slice(0, 99)]);
+    // DON'T add to bookmarks - only add to history
+    const hostname = new URL(url).hostname;
+    setBrowserHistory(prev => {
+      // Check if this URL is already in recent history to avoid duplicates
+      const existing = prev.find(h => h.url === url);
+      if (existing) return prev;
+      
+      return [{
+        url,
+        title: hostname,
+        timestamp: Date.now()
+      }, ...prev.slice(0, 99)];
+    });
 
-    // Load directly in iframe without proxy - let the iframe handle it
+    // Load directly in iframe
     if (iframeRef.current) {
       iframeRef.current.src = url;
       
-      // Update title when loaded
       iframeRef.current.onload = () => {
         try {
-          const title = iframeRef.current?.contentDocument?.title || new URL(url).hostname;
+          const title = iframeRef.current?.contentDocument?.title || hostname;
           setTabs(prev => prev.map(tab => 
             tab.id === tabId ? { ...tab, title } : tab
           ));
           setLoading(false);
           setError(null);
         } catch (e) {
-          // Cross-origin - can't access title
           setTabs(prev => prev.map(tab => 
-            tab.id === tabId ? { ...tab, title: new URL(url).hostname } : tab
+            tab.id === tabId ? { ...tab, title: hostname } : tab
           ));
           setLoading(false);
         }
       };
 
       iframeRef.current.onerror = () => {
-        setError("Failed to load page");
+        setError(`Unable to load ${hostname}. This site blocks browser embedding.`);
         setLoading(false);
+        toast.error(`${hostname} refused to connect`);
       };
     }
   };
@@ -375,8 +381,16 @@ const Browser = () => {
       {/* Content Area */}
       <div className="flex-1 bg-background relative">
         {error && (
-          <div className="absolute top-0 left-0 right-0 bg-destructive text-destructive-foreground p-4 z-10">
-            <p className="text-center">{error}</p>
+          <div className="absolute top-0 left-0 right-0 bg-destructive/10 border-b border-destructive text-foreground p-4 z-10">
+            <div className="flex items-center justify-center gap-2">
+              <X className="h-4 w-4 text-destructive" />
+              <p className="text-sm">
+                {error} 
+                <span className="ml-2 text-muted-foreground">
+                  Sites like Google, YouTube, and many others block iframe access for security.
+                </span>
+              </p>
+            </div>
           </div>
         )}
         {activeTab?.url ? (
