@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { MessageSquare, X, Send } from "lucide-react";
+import { MessageSquare, X, Send, Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -53,13 +53,17 @@ export const GlobalChat = () => {
         user_id,
         message,
         created_at,
-        profiles (username)
+        users!global_chat_user_id_fkey (username)
       `)
       .order('created_at', { ascending: false })
       .limit(100);
 
     if (!error && data) {
-      setMessages(data.reverse());
+      const formattedData = data.map(msg => ({
+        ...msg,
+        profiles: { username: (msg as any).users?.username || 'Unknown' }
+      }));
+      setMessages(formattedData.reverse() as any);
       scrollToBottom();
     }
   };
@@ -75,15 +79,15 @@ export const GlobalChat = () => {
           table: 'global_chat'
         },
         async (payload) => {
-          const { data: profile } = await supabase
-            .from('profiles')
+          const { data: userProfile } = await supabase
+            .from('users')
             .select('username')
             .eq('id', payload.new.user_id)
             .single();
 
           const newMsg: ChatMessage = {
             ...payload.new,
-            profiles: profile || { username: 'Unknown' }
+            profiles: userProfile || { username: 'Unknown' }
           } as ChatMessage;
 
           setMessages(prev => {
@@ -121,17 +125,23 @@ export const GlobalChat = () => {
       return;
     }
 
-    const { error } = await supabase
-      .from('global_chat')
-      .insert([{
-        user_id: user.id,
-        message: newMessage.trim()
-      }]);
+    try {
+      const { error } = await supabase
+        .from('global_chat')
+        .insert([{
+          user_id: user.id,
+          message: newMessage.trim()
+        }]);
 
-    if (error) {
+      if (error) {
+        console.error('Chat error:', error);
+        toast.error("Failed to send message: " + error.message);
+      } else {
+        setNewMessage("");
+      }
+    } catch (err) {
+      console.error('Chat error:', err);
       toast.error("Failed to send message");
-    } else {
-      setNewMessage("");
     }
   };
 
