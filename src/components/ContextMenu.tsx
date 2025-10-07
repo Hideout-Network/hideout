@@ -80,6 +80,7 @@ export const ContextMenu = ({ x, y, onClose, isOnBrowser }: ContextMenuProps) =>
   };
 
   const handleLogout = () => {
+    if (!user) return;
     setShowLogoutDialog(true);
   };
 
@@ -93,7 +94,7 @@ export const ContextMenu = ({ x, y, onClose, isOnBrowser }: ContextMenuProps) =>
   };
 
   const handleInspect = () => {
-    toast.info("Opening DevTools... (Press F12 or Ctrl+Shift+I)");
+    toast.info("Opening DevTools... (Press F12 or Alt+Shift+I)");
     onClose();
   };
 
@@ -161,7 +162,10 @@ export const ContextMenu = ({ x, y, onClose, isOnBrowser }: ContextMenuProps) =>
 
         <button
           onClick={handleLogout}
-          className="w-full px-4 py-2.5 text-left text-sm hover:bg-destructive/10 hover:text-destructive flex items-center gap-3 transition-colors"
+          disabled={!user}
+          className={`w-full px-4 py-2.5 text-left text-sm flex items-center gap-3 transition-colors ${
+            user ? 'hover:bg-destructive/10 hover:text-destructive' : 'opacity-50 cursor-not-allowed'
+          }`}
         >
           <LogOut className="w-4 h-4" />
           Logout

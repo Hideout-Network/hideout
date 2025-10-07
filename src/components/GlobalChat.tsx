@@ -32,6 +32,14 @@ export const GlobalChat = () => {
   }, [isOpen]);
 
   const checkUser = async () => {
+    try {
+      const { data: { user: authUser } } = await supabase.auth.getUser();
+      if (authUser) {
+        setUser({ id: authUser.id });
+        return;
+      }
+    } catch {}
+
     const storedUser = localStorage.getItem('hideout_user') || sessionStorage.getItem('hideout_user');
     if (storedUser) {
       try {
@@ -129,8 +137,22 @@ export const GlobalChat = () => {
   const sendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newMessage.trim()) return;
-    
-    if (!user) {
+
+    // Accept either Supabase session or custom user from storage
+    const { data: { user: authUser } } = await supabase.auth.getUser();
+    let userId: string | null = authUser?.id || null;
+
+    if (!userId) {
+      const storedUser = localStorage.getItem('hideout_user') || sessionStorage.getItem('hideout_user');
+      if (storedUser) {
+        try {
+          const parsed = JSON.parse(storedUser);
+          userId = parsed?.id || null;
+        } catch {}
+      }
+    }
+
+    if (!userId) {
       toast.error("Please login to send messages");
       return;
     }
@@ -138,20 +160,17 @@ export const GlobalChat = () => {
     try {
       const { error } = await (supabase as any)
         .from('global_chat')
-        .insert([{
-          user_id: user.id,
-          message: newMessage.trim()
-        }]);
+        .insert([{ user_id: userId, message: newMessage.trim() }]);
 
       if (error) {
         console.error('Chat error:', error);
-        toast.error("Failed to send message");
+        toast.error(error.message || "Failed to send message");
       } else {
         setNewMessage("");
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error('Chat error:', err);
-      toast.error("Failed to send message");
+      toast.error(err?.message || "Failed to send message");
     }
   };
 
