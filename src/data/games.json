@@ -841,7 +841,7 @@
   },
   {
     "name": "Retro Bowl",
-    "icon": "https://hideout-games.vercel.app/retro-bowl/img/icon.png",
+    "icon": "https://hideout-games.vercel.app/retro-bowl/img/icon.jpg",
     "popularity": ["hot"],
     "categories": ["Sports", "Strategy"],
     "gameLink": "https://hideout-games.vercel.app/retro-bowl/index.html"
