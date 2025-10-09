@@ -1,0 +1,18 @@
+{
+  "version": "V1 Prebeta",
+  "updateDate": "2025-10-09",
+  "changes": [
+    "🎉 Complete system overhaul and optimization",
+    "🔐 Enhanced security with improved authentication",
+    "💬 Fixed global chat system with 100-message limit",
+    "📊 Added loading progress indicators for games and apps",
+    "🌐 Improved pr0xy browser with better link handling",
+    "⭐ Synced favorite system across games and apps",
+    "🔧 All user data now saves to account (local storage & cookies)",
+    "🖱️ New Windows 11-style context menu with inspect tools",
+    "📧 Added email settings for newsletter preferences",
+    "🎨 Updated version display system",
+    "📝 Updated Terms of Service and Privacy Policy",
+    "🐛 Fixed numerous bugs and improved stability"
+  ]
+}
