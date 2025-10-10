@@ -56,39 +56,13 @@ export const GlobalChat = () => {
 
   const fetchMessages = async () => {
     try {
-      const { data, error } = await (supabase as any)
-        .from('global_chat')
-        .select('id, user_id, message, created_at')
-        .order('created_at', { ascending: true })
-        .limit(100);
-
-      if (error) {
-        console.error('Fetch messages error:', error);
+      const { data, error } = await supabase.functions.invoke('chat-history', { body: {} });
+      if (error || !(data as any)?.success) {
+        console.error('Fetch messages error:', error || (data as any)?.error);
         return;
       }
-
-      if (!data) {
-        setMessages([]);
-        return;
-      }
-
-      // Fetch usernames for each message
-      const messagesWithUsernames = await Promise.all(
-        data.map(async (msg: any) => {
-          const { data: userData } = await (supabase as any)
-            .from('users')
-            .select('username')
-            .eq('id', msg.user_id)
-            .maybeSingle();
-          
-          return {
-            ...msg,
-            username: userData?.username || 'Unknown'
-          };
-        })
-      );
-
-      setMessages(messagesWithUsernames);
+      const msgs = (data as any).messages || [];
+      setMessages(msgs);
       setTimeout(scrollToBottom, 100);
     } catch (err) {
       console.error('Fetch messages error:', err);
@@ -181,15 +155,17 @@ export const GlobalChat = () => {
     }
 
     try {
-      const { error } = await (supabase as any)
-        .from('global_chat')
-        .insert([{ user_id: userId, message: newMessage.trim() }]);
+      const { data, error } = await supabase.functions.invoke('chat-send', {
+        body: { userId, message: newMessage.trim() }
+      });
 
-      if (error) {
-        console.error('Chat error:', error);
-        toast.error(error.message || "Failed to send message");
+      if (error || (data as any)?.error) {
+        console.error('Chat error:', error || (data as any)?.error);
+        toast.error((data as any)?.error || error?.message || "Failed to send message");
       } else {
         setNewMessage("");
+        // Ensure UI reflects the new message even if realtime is restricted
+        fetchMessages();
       }
     } catch (err: any) {
       console.error('Chat error:', err);
@@ -210,13 +186,13 @@ export const GlobalChat = () => {
   return (
     <>
       {/* Chat Button */}
-      <Button
-        onClick={() => setIsOpen(true)}
-        className="fixed bottom-6 left-6 z-[9999] w-14 h-14 rounded-full shadow-lg hover:scale-110 transition-transform"
-        size="icon"
-      >
-        <MessageSquare className="w-6 h-6" />
-      </Button>
+                <Button 
+                  onClick={() => setIsOpen(true)}
+                  className="fixed bottom-6 left-6 z-[9999] w-14 h-14 rounded-full shadow-lg hover:scale-110 transition-transform"
+                  size="icon"
+                >
+                  <MessageSquare className="w-6 h-6" />
+                </Button>
 
       {/* Chat Panel */}
       {isOpen && (
