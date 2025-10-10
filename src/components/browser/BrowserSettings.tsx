@@ -25,11 +25,18 @@ export const BrowserSettings = () => {
   }, []);
 
   const handleSave = () => {
-    const settings = {
-      homePage,
-      usePreferredBrowser
-    };
+    const settings = { homePage, usePreferredBrowser };
     localStorage.setItem('hideout_browser_settings', JSON.stringify(settings));
+
+    // Also save per-account (if logged in via Hideout account)
+    const storedUser = localStorage.getItem('hideout_user') || sessionStorage.getItem('hideout_user');
+    if (storedUser) {
+      try {
+        const { id } = JSON.parse(storedUser);
+        if (id) localStorage.setItem(`hideout_browser_settings_${id}`, JSON.stringify(settings));
+      } catch {}
+    }
+
     toast.success("Settings saved successfully");
   };
 
