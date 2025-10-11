@@ -9,7 +9,7 @@ import { toast } from "sonner";
 
 export const BrowserSettings = () => {
   const [homePage, setHomePage] = useState("hideout://newtab");
-  const [usePreferredBrowser, setUsePreferredBrowser] = useState(false);
+  const [usePreferredBrowser, setUsePreferredBrowser] = useState(true);
 
   useEffect(() => {
     try {
@@ -25,7 +25,7 @@ export const BrowserSettings = () => {
       if (settingsStr) {
         const settings = JSON.parse(settingsStr);
         setHomePage(settings.homePage || "hideout://newtab");
-        setUsePreferredBrowser(!!settings.usePreferredBrowser);
+        setUsePreferredBrowser(settings.usePreferredBrowser !== undefined ? !!settings.usePreferredBrowser : true);
       }
     } catch (error) {
       console.error('Error loading browser settings:', error);

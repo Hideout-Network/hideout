@@ -9,7 +9,7 @@ import { useState } from "react";
 
 interface NavigationBarProps {
   urlInput: string;
-  engine: "google" | "duckduckgo" | "bing";
+  engine: "google" | "duckduckgo" | "bing" | "yahoo" | "yandex" | "brave";
   loading: boolean;
   canGoBack: boolean;
   canGoForward: boolean;
@@ -18,7 +18,7 @@ interface NavigationBarProps {
   bookmarks: string[];
   history: { url: string; title: string; timestamp: number }[];
   onUrlChange: (url: string) => void;
-  onEngineChange: (engine: "google" | "duckduckgo" | "bing") => void;
+  onEngineChange: (engine: "google" | "duckduckgo" | "bing" | "yahoo" | "yandex" | "brave") => void;
   onNavigate: () => void;
   onBack: () => void;
   onForward: () => void;
@@ -127,6 +127,9 @@ export const NavigationBar = ({
               <SelectItem value="google">Google</SelectItem>
               <SelectItem value="duckduckgo">DuckDuckGo</SelectItem>
               <SelectItem value="bing">Bing</SelectItem>
+              <SelectItem value="yahoo">Yahoo</SelectItem>
+              <SelectItem value="yandex">Yandex</SelectItem>
+              <SelectItem value="brave">Brave Search</SelectItem>
             </SelectContent>
           </Select>
           <div className="flex-1 relative">
