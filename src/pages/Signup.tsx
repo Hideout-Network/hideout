@@ -133,6 +133,9 @@ const Signup = () => {
                 <p className="text-xs text-muted-foreground">
                   Only letters, numbers, hyphens, and underscores allowed
                 </p>
+                <p className="text-xs text-yellow-500">
+                  ⚠️ Choose carefully - usernames cannot be changed later!
+                </p>
               </div>
 
               <div className="space-y-2">

@@ -33,7 +33,9 @@ const Apps = () => {
     const loadFavorites = async () => {
       const storedUser = localStorage.getItem('hideout_user') || sessionStorage.getItem('hideout_user');
       if (!storedUser) {
-        setFavorites([]);
+        // Load from localStorage if not logged in
+        const localFavs = JSON.parse(localStorage.getItem('hideout_app_favorites') || '[]');
+        setFavorites(localFavs);
         setIsLoading(false);
         return;
       }
@@ -41,15 +43,23 @@ const Apps = () => {
       try {
         const user = JSON.parse(storedUser);
         const { data } = await (supabase as any)
-          .from('favorites')
-          .select('game_name')
-          .eq('user_id', user.id);
+          .from('user_data')
+          .select('data')
+          .eq('user_id', user.id)
+          .eq('data_type', 'app_favorites')
+          .maybeSingle();
 
-        if (data) {
-          setFavorites(data.map((f: any) => f.game_name));
+        if (data && Array.isArray(data.data)) {
+          setFavorites(data.data);
+          localStorage.setItem('hideout_app_favorites', JSON.stringify(data.data));
+        } else {
+          // Load from localStorage if no database data
+          const localFavs = JSON.parse(localStorage.getItem('hideout_app_favorites') || '[]');
+          setFavorites(localFavs);
         }
       } catch (error) {
-        setFavorites([]);
+        const localFavs = JSON.parse(localStorage.getItem('hideout_app_favorites') || '[]');
+        setFavorites(localFavs);
       } finally {
         setIsLoading(false);
       }
@@ -79,17 +89,16 @@ const Apps = () => {
       try {
         const user = JSON.parse(storedUser);
 
-        if (isFav) {
-          await (supabase as any)
-            .from('favorites')
-            .delete()
-            .eq('user_id', user.id)
-            .eq('game_name', appName);
-        } else {
-          await (supabase as any)
-            .from('favorites')
-            .insert([{ user_id: user.id, game_name: appName }]);
-        }
+        // Save entire favorites array to user_data
+        await (supabase as any)
+          .from('user_data')
+          .upsert({
+            user_id: user.id,
+            data_type: 'app_favorites',
+            data: newFavorites
+          }, {
+            onConflict: 'user_id,data_type'
+          });
       } catch (error) {
         console.error('Error syncing favorites to database:', error);
       }

@@ -200,12 +200,37 @@ const Browser = () => {
     return url.startsWith('hideout://');
   };
 
+  // Check if showing new tab view
+  const isNewTabView = (url: string): boolean => {
+    return !url || url === 'hideout://newtab';
+  };
+
   const loadUrl = async (url: string, tabId: number) => {
     if (!url) return;
 
     // Handle internal hideout:// pages
     if (isInternalPage(url)) {
       const pageName = url.replace('hideout://', '');
+      
+      // Special handling for newtab - clear URL to show new tab view
+      if (url === 'hideout://newtab') {
+        setTabs(prev => prev.map(tab => {
+          if (tab.id === tabId) {
+            return {
+              ...tab,
+              url: '',
+              proxiedUrl: '',
+              proxiedHtml: undefined,
+              title: 'New Tab'
+            };
+          }
+          return tab;
+        }));
+        setLoading(false);
+        setError(null);
+        return;
+      }
+      
       setTabs(prev => prev.map(tab => {
         if (tab.id === tabId) {
           const newHistory = tab.history.slice(0, tab.historyIndex + 1);
@@ -685,12 +710,12 @@ const Browser = () => {
             </div>
           </div>
         )}
-        {activeTab?.url ? (
-          isInternalPage(activeTab.url) ? (
+        {!isNewTabView(activeTab?.url || '') ? (
+          isInternalPage(activeTab?.url || '') ? (
             <div className="w-full h-full overflow-y-auto">
-              {activeTab.url === 'hideout://help' && <BrowserHelp />}
-              {activeTab.url === 'hideout://settings' && <BrowserSettings />}
-              {activeTab.url === 'hideout://history' && (
+              {activeTab?.url === 'hideout://help' && <BrowserHelp />}
+              {activeTab?.url === 'hideout://settings' && <BrowserSettings />}
+              {activeTab?.url === 'hideout://history' && (
                 <BrowserHistory 
                   history={browserHistory}
                   onSelectUrl={handleSelectUrl}
@@ -702,7 +727,7 @@ const Browser = () => {
             <iframe
               ref={iframeRef}
               src={'about:blank'}
-              srcDoc={activeTab.proxiedHtml || undefined}
+              srcDoc={activeTab?.proxiedHtml || undefined}
               className="w-full h-full border-0 transition-transform duration-200"
               style={{ transform: `scale(${zoom})`, transformOrigin: 'top left' }}
               sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-downloads allow-top-navigation allow-modals"

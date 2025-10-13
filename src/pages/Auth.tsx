@@ -7,12 +7,14 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
+import { useUserData } from "@/hooks/use-user-data";
 import { supabase } from "@/integrations/supabase/client";
 import { Eye, EyeOff } from "lucide-react";
 
 const Auth = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { loadFromAccount: loadData } = useUserData();
   const [isLogin, setIsLogin] = useState(true);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -50,9 +52,12 @@ const Auth = () => {
       const storageType = rememberMe ? localStorage : sessionStorage;
       storageType.setItem('hideout_user', JSON.stringify(data.user));
 
+      // Load all user data from account
+      await loadData();
+
       toast({
         title: "Success",
-        description: "Logged in successfully!",
+        description: "Logged in successfully! Your data has been loaded.",
         duration: 5000,
       });
 

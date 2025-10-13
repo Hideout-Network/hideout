@@ -4,6 +4,7 @@ import { Search, MessageCircle, Mail, FileText, Shield } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { ReportBugDialog } from "@/components/ReportBugDialog";
+import { RequestGameDialog } from "@/components/RequestGameDialog";
 import { GlobalChat } from "@/components/GlobalChat";
 import versionData from "@/data/version.json";
 
@@ -71,9 +72,10 @@ const Index = () => {
             </button>
           </form>
           
-          {/* Report Bug Button */}
-          <div className="flex justify-center">
+          {/* Action Buttons */}
+          <div className="flex justify-center gap-3">
             <ReportBugDialog />
+            <RequestGameDialog />
           </div>
 
           {/* Footer */}

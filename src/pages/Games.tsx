@@ -6,7 +6,6 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Search, TrendingUp, Flame, Heart, Sparkles, Filter, Maximize } from "lucide-react";
-import { RequestGameDialog } from "@/components/RequestGameDialog";
 import { GlobalChat } from "@/components/GlobalChat";
 import {
   DropdownMenu,
@@ -89,13 +88,14 @@ const Games = () => {
         try {
           const user = JSON.parse(storedUser);
           const { data } = await (supabase as any)
-            .from('favorites')
-            .select('game_name')
-            .eq('user_id', user.id);
+            .from('user_data')
+            .select('data')
+            .eq('user_id', user.id)
+            .eq('data_type', 'game_favorites')
+            .maybeSingle();
 
-          if (data) {
-            const dbFavs = data.map((f: any) => f.game_name as string);
-            merged = Array.from(new Set([...localFavs, ...dbFavs]));
+          if (data && Array.isArray(data.data)) {
+            merged = Array.from(new Set([...localFavs, ...data.data]));
           }
         } catch (error) {
           // ignore DB errors, keep local
@@ -124,13 +124,13 @@ const Games = () => {
       try {
         const user = JSON.parse(storedUser);
         const { data } = await (supabase as any)
-          .from('favorites')
-          .select('id')
+          .from('user_data')
+          .select('data')
           .eq('user_id', user.id)
-          .eq('game_name', currentGame.name)
+          .eq('data_type', 'game_favorites')
           .maybeSingle();
 
-        setIsFavorited(localFavs.includes(currentGame.name) || !!data);
+        setIsFavorited(localFavs.includes(currentGame.name) || (data && Array.isArray(data.data) && data.data.includes(currentGame.name)));
       } catch (error) {
         setIsFavorited(localFavs.includes(currentGame.name));
       }
@@ -222,17 +222,16 @@ const Games = () => {
       try {
         const user = JSON.parse(storedUser);
 
-        if (isFav) {
-          await (supabase as any)
-            .from('favorites')
-            .delete()
-            .eq('user_id', user.id)
-            .eq('game_name', targetGame);
-        } else {
-          await (supabase as any)
-            .from('favorites')
-            .insert([{ user_id: user.id, game_name: targetGame }]);
-        }
+        // Save entire favorites array to user_data
+        await (supabase as any)
+          .from('user_data')
+          .upsert({
+            user_id: user.id,
+            data_type: 'game_favorites',
+            data: newFavorites
+          }, {
+            onConflict: 'user_id,data_type'
+          });
       } catch (error) {
         console.error('Error syncing favorites to database:', error);
       }
@@ -320,14 +319,11 @@ const Games = () => {
       <main className="pt-24 px-4 sm:px-6 pb-12 max-w-7xl mx-auto">
         {/* Header */}
         <div className="space-y-6 mb-12 animate-fade-in">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-4xl font-bold text-foreground mb-2">Games</h1>
-              <p className="text-muted-foreground text-lg">
-                Discover and play amazing games
-              </p>
-            </div>
-            <RequestGameDialog />
+          <div>
+            <h1 className="text-4xl font-bold text-foreground mb-2">Games</h1>
+            <p className="text-muted-foreground text-lg">
+              Discover and play amazing games
+            </p>
           </div>
 
           {/* Search and Filters */}
