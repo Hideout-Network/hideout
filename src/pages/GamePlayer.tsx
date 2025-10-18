@@ -7,6 +7,9 @@ import gamesData from "@/data/games.json";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { GameLoader } from "@/components/GameLoader";
+import { BatteryWarning } from "@/components/BatteryWarning";
+import { FPSCounter } from "@/components/FPSCounter";
+import { StarBackground } from "@/components/StarBackground";
 
 type Game = {
   name: string;
@@ -26,6 +29,12 @@ const GamePlayer = () => {
   const [user, setUser] = useState<any>(null);
   const [showLoader, setShowLoader] = useState(true);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [showFPS, setShowFPS] = useState(false);
+
+  useEffect(() => {
+    const settings = JSON.parse(localStorage.getItem('hideout_settings') || '{}');
+    setShowFPS(settings.showFPS || false);
+  }, []);
 
   useEffect(() => {
     const storedUser = localStorage.getItem('hideout_user') || sessionStorage.getItem('hideout_user');
@@ -165,9 +174,11 @@ const GamePlayer = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background relative">
+      <StarBackground />
+      <BatteryWarning isGamePage={true} />
       <Navigation />
-      <main className="pt-24 px-6 pb-12 max-w-7xl mx-auto">
+      <main className="pt-24 px-6 pb-12 max-w-7xl mx-auto relative z-10">
         {showLoader && game && (
           <GameLoader
             gameName={game.name}
@@ -179,7 +190,8 @@ const GamePlayer = () => {
         <div className="space-y-6">
           <h1 className="text-4xl font-bold text-foreground">{game.name}</h1>
           
-          <div className="w-full aspect-video bg-card rounded-lg overflow-hidden border border-border">
+          <div className="w-full aspect-video bg-card rounded-lg overflow-hidden border border-border relative">
+            {showFPS && <FPSCounter />}
             <iframe
               id="game-iframe"
               src={game.gameLink}

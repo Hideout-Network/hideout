@@ -9,15 +9,17 @@ import {
 } from "@/components/ui/accordion";
 import { HelpCircle, Mail, MessageCircle, BookOpen, Globe, Shield, Zap } from "lucide-react";
 import { GlobalChat } from "@/components/GlobalChat";
+import { StarBackground } from "@/components/StarBackground";
 
 const Help = () => {
   usePageTitle('Help');
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background relative">
+      <StarBackground />
       <Navigation />
       <GlobalChat />
 
-      <main className="pt-24 px-6 pb-12 max-w-4xl mx-auto">
+      <main className="pt-24 px-6 pb-12 max-w-4xl mx-auto relative z-10">
         {/* Header */}
         <div className="space-y-6 mb-12 animate-fade-in text-center">
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-primary/10 mb-4">

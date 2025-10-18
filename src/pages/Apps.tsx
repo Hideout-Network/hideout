@@ -1,10 +1,12 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Navigation } from "@/components/Navigation";
 import { Input } from "@/components/ui/input";
-import { Search, Filter, Heart } from "lucide-react";
+import { Search, Filter, Heart, Shuffle } from "lucide-react";
 import { GlobalChat } from "@/components/GlobalChat";
 import { supabase } from "@/integrations/supabase/client";
 import { usePageTitle } from "@/hooks/use-page-title";
+import { StarBackground } from "@/components/StarBackground";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -26,6 +28,7 @@ const apps: App[] = appsData as any;
 
 const Apps = () => {
   usePageTitle('Apps');
+  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [favorites, setFavorites] = useState<string[]>([]);
@@ -124,6 +127,11 @@ const Apps = () => {
 
   const allCategories = Array.from(new Set(apps.map(app => app.category)));
 
+  const handleFeelingLucky = () => {
+    const randomApp = apps[Math.floor(Math.random() * apps.length)];
+    window.location.href = `/browser?url=${encodeURIComponent(randomApp.link)}`;
+  };
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-background">
@@ -140,11 +148,12 @@ const Apps = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background relative">
+      <StarBackground />
       <Navigation />
       <GlobalChat />
 
-      <main className="pt-24 px-4 sm:px-6 pb-12 max-w-7xl mx-auto">
+      <main className="pt-24 px-4 sm:px-6 pb-12 max-w-7xl mx-auto relative z-10">
         {/* Header */}
         <div className="space-y-6 mb-12 animate-fade-in">
           <div>
@@ -155,12 +164,12 @@ const Apps = () => {
           </div>
 
           {/* Search and Filters */}
-          <div className="flex gap-3">
+          <div className="flex gap-3 flex-wrap">
             <div className="relative flex-1 max-w-md">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
               <Input 
                 placeholder="Search apps..." 
-                className="pl-10 bg-card border-border"
+                className="pl-10 bg-card border-border transition-colors"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
@@ -185,6 +194,11 @@ const Apps = () => {
                 ))}
               </DropdownMenuContent>
             </DropdownMenu>
+
+            <Button onClick={handleFeelingLucky} variant="outline" className="gap-2 bg-card border-primary/50 hover:bg-primary/10">
+              <Shuffle className="w-4 h-4" />
+              Feeling Lucky
+            </Button>
           </div>
         </div>
 

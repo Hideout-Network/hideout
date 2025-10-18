@@ -12,6 +12,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { GlobalChat } from "@/components/GlobalChat";
 import { DevTools } from "@/components/DevTools";
 import { usePageTitle } from "@/hooks/use-page-title";
+import { StarBackground } from "@/components/StarBackground";
 
 // Browser configuration
 
@@ -705,7 +706,8 @@ const Browser = () => {
   }, [activeTab, tabs, activeTabId]);
   
   return (
-    <div className="h-screen flex flex-col bg-background">
+    <div className="h-screen flex flex-col bg-background relative">
+      <StarBackground />
       <h1 className="sr-only">Web Pr0xy Browser</h1>
       
       {/* Tab bar with close button */}

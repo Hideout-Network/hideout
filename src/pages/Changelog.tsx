@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { usePageTitle } from "@/hooks/use-page-title";
 import updatesData from "@/data/updates.json";
 import { Calendar } from "lucide-react";
+import { StarBackground } from "@/components/StarBackground";
 
 type Update = {
   updateNumber: number;
@@ -20,9 +21,10 @@ const Changelog = () => {
   const sortedUpdates = [...updates].sort((a, b) => b.updateNumber - a.updateNumber);
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background relative">
+      <StarBackground />
       <Navigation />
-      <main className="pt-24 px-4 sm:px-6 pb-12 max-w-4xl mx-auto">
+      <main className="pt-24 px-4 sm:px-6 pb-12 max-w-4xl mx-auto relative z-10">
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold text-foreground mb-2">
             Changelog

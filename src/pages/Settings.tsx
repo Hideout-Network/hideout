@@ -7,10 +7,11 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { Settings as SettingsIcon, Bell, Palette, Database, Trash2, Mail } from "lucide-react";
+import { Settings as SettingsIcon, Bell, Palette, Database, Trash2, Mail, Globe, Zap, Activity } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { usePageTitle } from "@/hooks/use-page-title";
+import { StarBackground } from "@/components/StarBackground";
 
 const EmailSettingsToggle = () => {
   const [newslettersEnabled, setNewslettersEnabled] = useState(true);
@@ -56,6 +57,11 @@ type SettingsData = {
   highContrast: boolean;
   notificationsEnabled: boolean;
   generalNotifications: boolean;
+  performanceMode: boolean;
+  showFPS: boolean;
+  disableUpdatePopups: boolean;
+  incognitoMode: boolean;
+  autoOpenAboutBlank: boolean;
 };
 
 const Settings = () => {
@@ -69,6 +75,11 @@ const Settings = () => {
     highContrast: false,
     notificationsEnabled: false,
     generalNotifications: true,
+    performanceMode: false,
+    showFPS: false,
+    disableUpdatePopups: false,
+    incognitoMode: false,
+    autoOpenAboutBlank: false,
   });
 
   useEffect(() => {
@@ -106,11 +117,13 @@ const Settings = () => {
       root.style.fontSize = '16px';
     }
 
-    // Apply reduced motion
-    if (newSettings.reducedMotion) {
+    // Apply reduced motion or performance mode
+    if (newSettings.reducedMotion || newSettings.performanceMode) {
       root.style.setProperty('--transition-smooth', 'none');
+      root.classList.add('performance-mode');
     } else {
       root.style.setProperty('--transition-smooth', 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)');
+      root.classList.remove('performance-mode');
     }
 
     // Apply high contrast
@@ -189,6 +202,11 @@ const Settings = () => {
       highContrast: false,
       notificationsEnabled: settings.notificationsEnabled,
       generalNotifications: true,
+      performanceMode: false,
+      showFPS: false,
+      disableUpdatePopups: false,
+      incognitoMode: false,
+      autoOpenAboutBlank: false,
     };
     saveSettings(defaultSettings);
     toast.success("Settings reset to defaults", { duration: 5000 });
@@ -208,11 +226,12 @@ const Settings = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background relative">
+      <StarBackground />
       <Navigation />
       <GlobalChat />
 
-      <main className="pt-24 px-4 sm:px-6 pb-12 max-w-4xl mx-auto">
+      <main className="pt-24 px-4 sm:px-6 pb-12 max-w-4xl mx-auto relative z-10">
         {fromBrowser && (
           <div className="mb-8 p-8 bg-card border border-border rounded-lg text-center animate-fade-in">
             <h2 className="text-2xl font-bold mb-2">🚧 Under Construction</h2>
@@ -334,13 +353,96 @@ const Settings = () => {
           </Card>
 
           {/* Email Settings */}
-          <Card className="p-4 sm:p-6 bg-card border-border mt-6">
+          <Card className="p-4 sm:p-6 bg-card border-border">
             <div className="flex items-center gap-3 mb-4">
               <Mail className="w-5 h-5 text-primary" />
               <h2 className="text-lg sm:text-xl font-semibold">Email Settings</h2>
             </div>
             <Separator className="mb-4" />
             <EmailSettingsToggle />
+          </Card>
+
+          {/* Browser Settings */}
+          <Card className="p-4 sm:p-6 bg-card border-border">
+            <div className="flex items-center gap-3 mb-4">
+              <Globe className="w-5 h-5 text-primary" />
+              <h2 className="text-lg sm:text-xl font-semibold">Browser Settings</h2>
+            </div>
+            <Separator className="mb-4" />
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div className="space-y-0.5">
+                  <Label>Incognito Mode</Label>
+                  <p className="text-sm text-muted-foreground">Don't save history or cookies</p>
+                </div>
+                <Switch 
+                  checked={settings.incognitoMode} 
+                  onCheckedChange={(v) => handleSettingChange('incognitoMode', v)} 
+                />
+              </div>
+              <div className="flex items-center justify-between">
+                <div className="space-y-0.5">
+                  <Label>Auto Open in about:blank</Label>
+                  <p className="text-sm text-muted-foreground">Automatically open sites in cloaked window</p>
+                </div>
+                <Switch 
+                  checked={settings.autoOpenAboutBlank} 
+                  onCheckedChange={(v) => handleSettingChange('autoOpenAboutBlank', v)} 
+                />
+              </div>
+            </div>
+          </Card>
+
+          {/* Performance Settings */}
+          <Card className="p-4 sm:p-6 bg-card border-border">
+            <div className="flex items-center gap-3 mb-4">
+              <Zap className="w-5 h-5 text-primary" />
+              <h2 className="text-lg sm:text-xl font-semibold">Performance</h2>
+            </div>
+            <Separator className="mb-4" />
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div className="space-y-0.5">
+                  <Label>Performance Mode</Label>
+                  <p className="text-sm text-muted-foreground">Disable animations for better performance</p>
+                </div>
+                <Switch 
+                  checked={settings.performanceMode} 
+                  onCheckedChange={(v) => handleSettingChange('performanceMode', v)} 
+                />
+              </div>
+              <div className="flex items-center justify-between">
+                <div className="space-y-0.5">
+                  <Label>Show FPS Counter</Label>
+                  <p className="text-sm text-muted-foreground">Display frames per second in games</p>
+                </div>
+                <Switch 
+                  checked={settings.showFPS} 
+                  onCheckedChange={(v) => handleSettingChange('showFPS', v)} 
+                />
+              </div>
+            </div>
+          </Card>
+
+          {/* Update Settings */}
+          <Card className="p-4 sm:p-6 bg-card border-border">
+            <div className="flex items-center gap-3 mb-4">
+              <Activity className="w-5 h-5 text-primary" />
+              <h2 className="text-lg sm:text-xl font-semibold">Updates</h2>
+            </div>
+            <Separator className="mb-4" />
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div className="space-y-0.5">
+                  <Label>Disable Update Popups</Label>
+                  <p className="text-sm text-muted-foreground">Don't show update notifications</p>
+                </div>
+                <Switch 
+                  checked={settings.disableUpdatePopups} 
+                  onCheckedChange={(v) => handleSettingChange('disableUpdatePopups', v)} 
+                />
+              </div>
+            </div>
           </Card>
 
           {/* Save Button */}

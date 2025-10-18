@@ -5,8 +5,10 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Search, TrendingUp, Flame, Heart, Sparkles, Filter, Maximize } from "lucide-react";
+import { Search, TrendingUp, Flame, Heart, Sparkles, Filter, Maximize, Shuffle } from "lucide-react";
+import { FPSCounter } from "@/components/FPSCounter";
 import { GlobalChat } from "@/components/GlobalChat";
+import { StarBackground } from "@/components/StarBackground";
 import { usePageTitle } from "@/hooks/use-page-title";
 import { GameLoader } from "@/components/GameLoader";
 import {
@@ -58,7 +60,16 @@ const Games = () => {
   const [iconsLoaded, setIconsLoaded] = useState<Record<string, boolean>>({});
   const [favorites, setFavorites] = useState<string[]>([]);
   const [showGameLoader, setShowGameLoader] = useState(false);
+  const [showFPS, setShowFPS] = useState(false);
   const { toast } = useToast();
+
+  useEffect(() => {
+    const settings = localStorage.getItem('hideout_settings');
+    if (settings) {
+      const parsed = JSON.parse(settings);
+      setShowFPS(parsed.showFPS || false);
+    }
+  }, []);
 
   useEffect(() => {
     if (gameParam) {
@@ -245,10 +256,16 @@ const Games = () => {
     }
   };
 
+  const handleMysteryGame = () => {
+    const randomGame = games[Math.floor(Math.random() * games.length)];
+    handleGameClick(randomGame.name);
+  };
+
   // If a game is selected, show the game player
   if (currentGame) {
     return (
       <div className="min-h-screen bg-background">
+        {showFPS && <FPSCounter />}
         <Navigation />
         <main className="pt-24 px-4 sm:px-6 pb-12 max-w-4xl mx-auto">
           <div className="space-y-3">
@@ -310,11 +327,12 @@ const Games = () => {
 
   // Show games listing
   if (isLoading) {
-    return (
-      <div className="min-h-screen bg-background">
-        <Navigation />
-        <GlobalChat />
-        <main className="pt-24 px-4 sm:px-6 pb-12 max-w-7xl mx-auto">
+  return (
+    <div className="min-h-screen bg-background relative">
+      <StarBackground />
+      <Navigation />
+      <GlobalChat />
+      <main className="pt-24 px-4 sm:px-6 pb-12 max-w-7xl mx-auto relative z-10">
           <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
             <div className="animate-spin rounded-full h-16 w-16 border-4 border-primary border-t-transparent" />
             <p className="text-muted-foreground text-lg">
@@ -327,11 +345,12 @@ const Games = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background relative">
+      <StarBackground />
       <Navigation />
       <GlobalChat />
 
-      <main className="pt-24 px-4 sm:px-6 pb-12 max-w-7xl mx-auto">
+      <main className="pt-24 px-4 sm:px-6 pb-12 max-w-7xl mx-auto relative z-10">
         {/* Header */}
         <div className="space-y-6 mb-12 animate-fade-in">
           <div>
@@ -342,7 +361,7 @@ const Games = () => {
           </div>
 
           {/* Search and Filters */}
-          <div className="flex gap-3">
+          <div className="flex gap-3 flex-wrap">
             <div className="relative flex-1 max-w-md">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
               <Input 
@@ -372,6 +391,11 @@ const Games = () => {
                 ))}
               </DropdownMenuContent>
             </DropdownMenu>
+
+            <Button onClick={handleMysteryGame} variant="outline" className="gap-2 bg-card border-primary/50 hover:bg-primary/10">
+              <Shuffle className="w-4 h-4" />
+              Feeling Lucky
+            </Button>
           </div>
         </div>
 

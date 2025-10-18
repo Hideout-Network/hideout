@@ -10,6 +10,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { LogOut, Trash2, Key } from "lucide-react";
 import { ChangePasswordDialog } from "@/components/ChangePasswordDialog";
 import { usePageTitle } from "@/hooks/use-page-title";
+import { StarBackground } from "@/components/StarBackground";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -122,10 +123,11 @@ const Account = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background relative">
+      <StarBackground />
       <Navigation />
       <GlobalChat />
-      <main className="pt-24 px-4 sm:px-6 pb-12 max-w-2xl mx-auto">
+      <main className="pt-24 px-4 sm:px-6 pb-12 max-w-2xl mx-auto relative z-10">
         <Card className="p-8 bg-card border-border">
           <div className="space-y-8">
             <div className="text-center">
