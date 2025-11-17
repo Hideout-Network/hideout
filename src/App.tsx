@@ -12,18 +12,26 @@ import GamePlayer from "./pages/GamePlayer";
 import Apps from "./pages/Apps";
 import Help from "./pages/Help";
 import Settings from "./pages/Settings";
-import Auth from "./pages/Auth";
-import Signup from "./pages/Signup";
-import Account from "./pages/Account";
-import Terms from "./pages/Terms";
-import Privacy from "./pages/Privacy";
 import Browser from "./pages/Browser";
 import Changelog from "./pages/Changelog";
 import Addons from "./pages/Addons";
 import NotFound from "./pages/NotFound";
 import { StarBackground } from "./components/StarBackground";
 import { BatteryWarning } from "./components/BatteryWarning";
-import EmailSettings from "./pages/EmailSettings";
+
+import themesDataJson from "@/jsons/themes.json";
+
+type ThemesData = {
+  site: string;
+  "main-theme": string;
+  themes: Array<{
+    id: string;
+    name: string;
+    themePath: string;
+  }>;
+};
+
+const themesData: ThemesData = themesDataJson;
 
 const queryClient = new QueryClient();
 
@@ -39,6 +47,80 @@ const App = () => {
 
     document.addEventListener('contextmenu', handleContextMenu);
     return () => document.removeEventListener('contextmenu', handleContextMenu);
+  }, []);
+
+  // Load all settings on app mount
+  useEffect(() => {
+    const loadSettings = () => {
+      // Clean up old theme storage - only use hideout_settings
+      localStorage.removeItem('hideout_active_theme');
+      localStorage.removeItem('hideout_theme');
+      
+      // Load settings from localStorage
+      const savedSettings = localStorage.getItem('hideout_settings');
+      let settings = {
+        selectedTheme: themesData['main-theme'],
+        fontSize: 'medium',
+        reducedMotion: false,
+        highContrast: false,
+        performanceMode: false,
+        showFPS: false,
+      };
+      
+      if (savedSettings) {
+        try {
+          const parsed = JSON.parse(savedSettings);
+          settings = { ...settings, ...parsed };
+        } catch (e) {
+          console.error('Failed to parse settings:', e);
+        }
+      }
+      
+      // Apply theme
+      const theme = themesData.themes.find(t => t.id === settings.selectedTheme);
+      if (theme) {
+        const script = document.getElementById('theme-script');
+        if (script) {
+          script.remove();
+        }
+        
+        const newScript = document.createElement('script');
+        newScript.id = 'theme-script';
+        newScript.src = `${themesData.site}${theme.themePath}`;
+        newScript.async = true;
+        newScript.onload = () => {
+          console.log(`Theme loaded: ${settings.selectedTheme}`);
+        };
+        document.head.appendChild(newScript);
+      }
+      
+      // Apply fontSize
+      document.documentElement.classList.remove('text-sm', 'text-base', 'text-lg');
+      const sizeClass = settings.fontSize === 'small' ? 'text-sm' : settings.fontSize === 'large' ? 'text-lg' : 'text-base';
+      document.documentElement.classList.add(sizeClass);
+      
+      // Apply reduced motion
+      if (settings.reducedMotion) {
+        document.documentElement.classList.add('reduce-motion');
+      }
+      
+      // Apply high contrast
+      if (settings.highContrast) {
+        document.documentElement.classList.add('high-contrast');
+      }
+    };
+    
+    loadSettings();
+    
+    // Reload settings on visibility change (when user returns to tab)
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        loadSettings();
+      }
+    };
+    
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
   }, []);
 
   return (
@@ -67,11 +149,6 @@ const App = () => {
             <Route path="/addons" element={<Addons />} />
             <Route path="/help" element={<Help />} />
             <Route path="/settings" element={<Settings />} />
-            <Route path="/auth" element={<Auth />} />
-            <Route path="/signup" element={<Signup />} />
-            <Route path="/account" element={<Account />} />
-            <Route path="/terms" element={<Terms />} />
-            <Route path="/privacy" element={<Privacy />} />
             <Route path="/changelog" element={<Changelog />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
