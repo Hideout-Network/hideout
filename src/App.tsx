@@ -19,8 +19,6 @@ import NotFound from "./pages/NotFound";
 import { StarBackground } from "./components/StarBackground";
 import { BatteryWarning } from "./components/BatteryWarning";
 
-import themesDataJson from "@/jsons/themes.json";
-
 type ThemesData = {
   site: string;
   "main-theme": string;
@@ -30,8 +28,6 @@ type ThemesData = {
     themePath: string;
   }>;
 };
-
-const themesData: ThemesData = themesDataJson;
 
 const queryClient = new QueryClient();
 
@@ -51,62 +47,70 @@ const App = () => {
 
   // Load all settings on app mount
   useEffect(() => {
-    const loadSettings = () => {
-      // Clean up old theme storage - only use hideout_settings
-      localStorage.removeItem('hideout_active_theme');
-      localStorage.removeItem('hideout_theme');
-      
-      // Load settings from localStorage
-      const savedSettings = localStorage.getItem('hideout_settings');
-      let settings = {
-        selectedTheme: themesData['main-theme'],
-        fontSize: 'medium',
-        reducedMotion: false,
-        highContrast: false,
-        performanceMode: false,
-        showFPS: false,
-      };
-      
-      if (savedSettings) {
-        try {
-          const parsed = JSON.parse(savedSettings);
-          settings = { ...settings, ...parsed };
-        } catch (e) {
-          console.error('Failed to parse settings:', e);
-        }
-      }
-      
-      // Apply theme
-      const theme = themesData.themes.find(t => t.id === settings.selectedTheme);
-      if (theme) {
-        const script = document.getElementById('theme-script');
-        if (script) {
-          script.remove();
+    const loadSettings = async () => {
+      try {
+        // Fetch themes data from remote URL
+        const response = await fetch('https://hideout-network.github.io/hideout-assets/themes/themes.json');
+        const themesData: ThemesData = await response.json();
+
+        // Clean up old theme storage - only use hideout_settings
+        localStorage.removeItem('hideout_active_theme');
+        localStorage.removeItem('hideout_theme');
+        
+        // Load settings from localStorage
+        const savedSettings = localStorage.getItem('hideout_settings');
+        let settings = {
+          selectedTheme: themesData['main-theme'],
+          fontSize: 'medium',
+          reducedMotion: false,
+          highContrast: false,
+          performanceMode: false,
+          showFPS: false,
+        };
+        
+        if (savedSettings) {
+          try {
+            const parsed = JSON.parse(savedSettings);
+            settings = { ...settings, ...parsed };
+          } catch (e) {
+            console.error('Failed to parse settings:', e);
+          }
         }
         
-        const newScript = document.createElement('script');
-        newScript.id = 'theme-script';
-        newScript.src = `${themesData.site}${theme.themePath}`;
-        newScript.async = true;
-        newScript.onload = () => {
-          console.log(`Theme loaded: ${settings.selectedTheme}`);
-        };
-        document.head.appendChild(newScript);
-      }
-      
-      // Apply fontSize
-      document.documentElement.classList.remove('text-sm', 'text-base', 'text-lg');
-      const sizeClass = settings.fontSize === 'small' ? 'text-sm' : settings.fontSize === 'large' ? 'text-lg' : 'text-base';
-      document.documentElement.classList.add(sizeClass);
-      
-      // Apply reduced motion
-      if (settings.reducedMotion) {
-        document.documentElement.classList.add('reduce-motion');
-      }
-      
-      // Apply high contrast
-      if (settings.highContrast) {
-        document.documentElement.classList.add('high-contrast');
+        // Apply theme
+        const theme = themesData.themes.find(t => t.id === settings.selectedTheme);
+        if (theme) {
+          const script = document.getElementById('theme-script');
+          if (script) {
+            script.remove();
+          }
+          
+          const newScript = document.createElement('script');
+          newScript.id = 'theme-script';
+          newScript.src = `${themesData.site}${theme.themePath}`;
+          newScript.async = true;
+          newScript.onload = () => {
+            console.log(`Theme loaded: ${settings.selectedTheme}`);
+          };
+          document.head.appendChild(newScript);
+        }
+        
+        // Apply fontSize
+        document.documentElement.classList.remove('text-sm', 'text-base', 'text-lg');
+        const sizeClass = settings.fontSize === 'small' ? 'text-sm' : settings.fontSize === 'large' ? 'text-lg' : 'text-base';
+        document.documentElement.classList.add(sizeClass);
+        
+        // Apply reduced motion
+        if (settings.reducedMotion) {
+          document.documentElement.classList.add('reduce-motion');
+        }
+        
+        // Apply high contrast
+        if (settings.highContrast) {
+          document.documentElement.classList.add('high-contrast');
+        }
+      } catch (error) {
+        console.error('Failed to load themes:', error);
       }
     };
     
