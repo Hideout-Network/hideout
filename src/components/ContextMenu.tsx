@@ -12,7 +12,6 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import addonsDataJson from "@/jsons/addons.json";
 
 type AddonsData = {
   site: string;
@@ -26,8 +25,6 @@ type AddonsData = {
     scriptUrl: string;
   }>;
 };
-
-const addonsData: AddonsData = addonsDataJson;
 
 interface ContextMenuProps {
   x: number;
@@ -46,6 +43,7 @@ export const ContextMenu = ({
   const location = useLocation();
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
   const [user, setUser] = useState<any>(null);
+  const [addonsData, setAddonsData] = useState<AddonsData | null>(null);
   const [installedAddons, setInstalledAddons] = useState<any[]>([]);
   const [executedAddons, setExecutedAddons] = useState<Record<string, boolean>>({});
   const [showAddonSubmenu, setShowAddonSubmenu] = useState(false);
@@ -65,13 +63,17 @@ export const ContextMenu = ({
       }
     }
 
-    // Load installed addons
-    const loadAddons = () => {
+    // Fetch addons data and load installed addons
+    const loadAddons = async () => {
       try {
+        const response = await fetch('https://hideout-network.github.io/hideout-assets/addons/addons.json');
+        const data: AddonsData = await response.json();
+        setAddonsData(data);
+
         const installed = localStorage.getItem("hideout_installed_addons");
         if (installed) {
           const scriptUrls = JSON.parse(installed);
-          const installedAddonsData = addonsData.addons.filter((addon) =>
+          const installedAddonsData = data.addons.filter((addon) =>
             scriptUrls.includes(addon.scriptUrl)
           );
           setInstalledAddons(installedAddonsData);
@@ -171,6 +173,8 @@ export const ContextMenu = ({
   };
 
   const handleRunAddon = async (addon: any, inIframe: boolean = false) => {
+    if (!addonsData) return;
+
     const fullScriptUrl = `${addonsData.site}${addon.scriptUrl}`;
     const idAttr = "data-hideout-addon";
     const isExecuted = !!executedAddons[addon.scriptUrl];
@@ -254,6 +258,7 @@ export const ContextMenu = ({
       onClose();
     }
   };
+  
   return (
     <>
       <div className="fixed inset-0 z-[9998]" onClick={onClose} />
@@ -289,7 +294,7 @@ export const ContextMenu = ({
             <span className="text-xs">›</span>
           </button>
 
-          {showAddonSubmenu && installedAddons.length > 0 && (
+          {showAddonSubmenu && installedAddons.length > 0 && addonsData && (
             <div
               onMouseEnter={() => setShowAddonSubmenu(true)}
               onMouseLeave={() => {
@@ -323,7 +328,7 @@ export const ContextMenu = ({
                         className="fixed left-[12.1rem] top-0 bg-card border border-border rounded-lg shadow-2xl py-1 min-w-[160px] backdrop-blur-xl z-[10001]"
                       >
                         <button
-                          onClick={() => handleRunAddon(addon.scriptUrl, false)}
+                          onClick={() => handleRunAddon(addon, false)}
                           className="w-full px-4 py-2.5 text-left text-sm hover:bg-muted/50 transition-colors"
                         >
                           {executedAddons[addon.scriptUrl] ? "Unexecute" : "Execute"}
