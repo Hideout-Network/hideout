@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import updatesData from "@/data/updates.json";
+import updatesData from "@/jsons/updates.json";
 
 export const UpdateDialog = () => {
   const [open, setOpen] = useState(false);

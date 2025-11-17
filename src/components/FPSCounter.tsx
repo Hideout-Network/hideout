@@ -31,7 +31,7 @@ export const FPSCounter = () => {
   }, []);
 
   return (
-    <div className="absolute top-4 left-4 z-[9999] bg-black/80 backdrop-blur-sm text-white px-3 py-1.5 rounded-lg text-sm font-mono border border-primary/30 pointer-events-none">
+    <div className="absolute top-2 left-2 z-[9999] bg-black/80 backdrop-blur-sm text-white px-3 py-1.5 rounded-lg text-sm font-mono border border-primary/30 pointer-events-none">
       {fps} FPS
     </div>
   );

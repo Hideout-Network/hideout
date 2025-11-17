@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/select";
 import { Plus } from "lucide-react";
 
-const requestTypes = ["Game", "App", "Feature"] as const;
+const requestTypes = ["Game", "App", "Add-on", "Feature", "Theme"] as const;
 
 const gameCategories = [
   "Action",
@@ -34,7 +34,17 @@ const gameCategories = [
   "Strategy",
 ];
 
-export const RequestGameDialog = () => {
+const appCategories = [
+  "AI",
+  "Education",
+  "Entertainment",
+  "Productivity",
+  "Social",
+  "Tools",
+  "Utilities",
+];
+
+export const RequestGameDialog = ({ variant = "default" }: { variant?: "default" | "outline" }) => {
   const [open, setOpen] = useState(false);
   const [requestType, setRequestType] = useState<typeof requestTypes[number]>("Game");
   const [itemName, setItemName] = useState("");
@@ -44,14 +54,25 @@ export const RequestGameDialog = () => {
 
   const handleSubmit = () => {
     const subject = `${requestType} Request`;
-    let body = `Request Type: ${requestType}\nName: ${itemName}\n`;
+    let body = `Request Type: ${requestType}\n`;
     
-    if (requestType === "Game" && category) {
+    // Dynamic field names based on type
+    const itemLabel = requestType === "App" ? "App Name" : 
+                     requestType === "Game" ? "Game Name" : 
+                     requestType === "Theme" ? "Theme Name" :
+                     `${requestType} Name`;
+    const linkLabel = requestType === "App" ? "App Link" : 
+                     requestType === "Game" ? "Game Link" : 
+                     "Source URL";
+    
+    body += `${itemLabel}: ${itemName}\n`;
+    
+    if ((requestType === "Game" || requestType === "App") && category) {
       body += `Category: ${category}\n`;
     }
     
     if (sourceUrl) {
-      body += `Source URL: ${sourceUrl}\n`;
+      body += `${linkLabel}: ${sourceUrl}\n`;
     }
     
     if (description) {
@@ -73,7 +94,7 @@ export const RequestGameDialog = () => {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className="gap-2">
+        <Button variant={variant} className="gap-2">
           <Plus className="w-4 h-4" />
           Request
         </Button>
@@ -82,7 +103,7 @@ export const RequestGameDialog = () => {
         <DialogHeader>
           <DialogTitle>Submit a Request</DialogTitle>
           <DialogDescription>
-            Request a game, app, or feature to be added to Hideout.
+            Request a game, app, add-on, or feature to be added to Hideout.
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
@@ -103,7 +124,12 @@ export const RequestGameDialog = () => {
           </div>
           
           <div className="space-y-2">
-            <Label htmlFor="item-name">{requestType} Name *</Label>
+            <Label htmlFor="item-name">
+              {requestType === "App" ? "App Name" : 
+               requestType === "Game" ? "Game Name" : 
+               requestType === "Theme" ? "Theme Name" :
+               `${requestType} Name`} *
+            </Label>
             <Input
               id="item-name"
               value={itemName}
@@ -112,7 +138,7 @@ export const RequestGameDialog = () => {
             />
           </div>
           
-          {requestType === "Game" && (
+          {(requestType === "Game" || requestType === "App") && (
             <div className="space-y-2">
               <Label htmlFor="category">Category *</Label>
               <Select value={category} onValueChange={setCategory}>
@@ -120,7 +146,7 @@ export const RequestGameDialog = () => {
                   <SelectValue placeholder="Select category" />
                 </SelectTrigger>
                 <SelectContent>
-                  {gameCategories.map((cat) => (
+                  {(requestType === "Game" ? gameCategories : appCategories).map((cat) => (
                     <SelectItem key={cat} value={cat}>
                       {cat}
                     </SelectItem>
@@ -131,7 +157,11 @@ export const RequestGameDialog = () => {
           )}
           
           <div className="space-y-2">
-            <Label htmlFor="source-url">Source URL (Optional)</Label>
+            <Label htmlFor="source-url">
+              {requestType === "App" ? "App Link (Optional)" : 
+               requestType === "Game" ? "Game Link (Optional)" : 
+               "Source URL (Optional)"}
+            </Label>
             <Input
               id="source-url"
               value={sourceUrl}
@@ -154,7 +184,7 @@ export const RequestGameDialog = () => {
         </div>
         <Button
           onClick={handleSubmit}
-          disabled={!itemName || (requestType === "Game" && !category)}
+          disabled={!itemName || ((requestType === "Game" || requestType === "App") && !category)}
           className="w-full"
         >
           Submit Request

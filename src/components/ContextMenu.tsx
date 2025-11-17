@@ -1,10 +1,33 @@
 import { useEffect, useState } from "react";
-import { LogOut, Trash2, Save, Code } from "lucide-react";
+import { LogOut, Trash2, Save, Code, Puzzle } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { toast } from "sonner";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import addonsDataImport from '@/data/addons/addons.json';
-import addonIcon from "@/assets/addon-icon.png";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import addonsDataJson from "@/jsons/addons.json";
+
+type AddonsData = {
+  site: string;
+  addons: Array<{
+    id: string;
+    name: string;
+    author: string;
+    version: string;
+    description: string;
+    iconPath: string;
+    scriptUrl: string;
+  }>;
+};
+
+const addonsData: AddonsData = addonsDataJson;
 
 interface ContextMenuProps {
   x: number;
@@ -13,19 +36,27 @@ interface ContextMenuProps {
   isOnBrowser?: boolean;
 }
 
-export const ContextMenu = ({ x, y, onClose, isOnBrowser }: ContextMenuProps) => {
+export const ContextMenu = ({
+  x,
+  y,
+  onClose,
+  isOnBrowser,
+}: ContextMenuProps) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
   const [user, setUser] = useState<any>(null);
   const [installedAddons, setInstalledAddons] = useState<any[]>([]);
+  const [executedAddons, setExecutedAddons] = useState<Record<string, boolean>>({});
   const [showAddonSubmenu, setShowAddonSubmenu] = useState(false);
   const [hoveredAddonId, setHoveredAddonId] = useState<string | null>(null);
-  
-  const isGamePage = location.pathname.startsWith('/game/');
+
+  const isGamePage = location.pathname.startsWith("/games");
 
   useEffect(() => {
-    const storedUser = localStorage.getItem('hideout_user') || sessionStorage.getItem('hideout_user');
+    const storedUser =
+      localStorage.getItem("hideout_user") ||
+      sessionStorage.getItem("hideout_user");
     if (storedUser) {
       try {
         setUser(JSON.parse(storedUser));
@@ -37,16 +68,16 @@ export const ContextMenu = ({ x, y, onClose, isOnBrowser }: ContextMenuProps) =>
     // Load installed addons
     const loadAddons = () => {
       try {
-        const installed = localStorage.getItem('hideout_installed_addons');
+        const installed = localStorage.getItem("hideout_installed_addons");
         if (installed) {
           const scriptUrls = JSON.parse(installed);
-          const installedAddonsData = addonsDataImport.filter((addon: any) => 
+          const installedAddonsData = addonsData.addons.filter((addon) =>
             scriptUrls.includes(addon.scriptUrl)
           );
           setInstalledAddons(installedAddonsData);
         }
       } catch (error) {
-        console.error('Failed to load addons:', error);
+        console.error("Failed to load addons:", error);
       }
     };
     loadAddons();
@@ -54,7 +85,7 @@ export const ContextMenu = ({ x, y, onClose, isOnBrowser }: ContextMenuProps) =>
 
   const handleOpenInAboutBlank = () => {
     const currentUrl = window.location.href;
-    const aboutBlankWindow = window.open('about:blank', '_blank');
+    const aboutBlankWindow = window.open("about:blank", "_blank");
     if (aboutBlankWindow) {
       aboutBlankWindow.document.write(`
         <!DOCTYPE html>
@@ -79,14 +110,18 @@ export const ContextMenu = ({ x, y, onClose, isOnBrowser }: ContextMenuProps) =>
 
   const handleDeleteCookies = () => {
     document.cookie.split(";").forEach((c) => {
-      document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
+      document.cookie = c
+        .replace(/^ +/, "")
+        .replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
     });
     toast.success("Cookies deleted");
     onClose();
   };
 
   const handleDeleteLocalStorage = () => {
-    const confirmDelete = window.confirm("This will delete all local storage data. Are you sure?");
+    const confirmDelete = window.confirm(
+      "This will delete all local storage data. Are you sure?"
+    );
     if (confirmDelete) {
       localStorage.clear();
       toast.success("Local storage cleared");
@@ -99,16 +134,12 @@ export const ContextMenu = ({ x, y, onClose, isOnBrowser }: ContextMenuProps) =>
       toast.error("Please login to save data to your account");
       return;
     }
-    
+
     try {
-      // Import and use the saveToAccount function
-      const { useUserData } = await import("@/hooks/use-user-data");
-      const { saveToAccount } = useUserData();
-      await saveToAccount();
-      toast.success("All data saved to account");
+      toast.success("Account features have been removed");
     } catch (error) {
-      console.error('Error saving to account:', error);
-      toast.error("Failed to save data to account");
+      console.error("Error:", error);
+      toast.error("Failed to save data");
     }
     onClose();
   };
@@ -120,117 +151,112 @@ export const ContextMenu = ({ x, y, onClose, isOnBrowser }: ContextMenuProps) =>
 
   const confirmLogout = async () => {
     try {
-      // Import the setLoggingOut function
-      const { setLoggingOut } = await import('@/hooks/use-user-data');
+      // Clear chat username
+      localStorage.removeItem("hideout_chat_username");
       
-      // Helper functions to get all data
-      const getAllLocalStorage = (): Record<string, any> => {
-        const allData: Record<string, any> = {};
-        for (let i = 0; i < localStorage.length; i++) {
-          const key = localStorage.key(i);
-          if (key && !key.includes('hideout_user')) {
-            try {
-              const value = localStorage.getItem(key);
-              if (value) allData[key] = JSON.parse(value);
-            } catch (error) {
-              const value = localStorage.getItem(key);
-              if (value) allData[key] = value;
-            }
-          }
-        }
-        return allData;
-      };
-
-      const getAllCookies = (): Record<string, string> => {
-        const cookies: Record<string, string> = {};
-        const cookieString = document.cookie;
-        if (cookieString) {
-          cookieString.split(';').forEach(cookie => {
-            const [name, ...rest] = cookie.split('=');
-            cookies[name.trim()] = rest.join('=').trim();
-          });
-        }
-        return cookies;
-      };
-
-      // Save to account before clearing
-      const localStorageData = getAllLocalStorage();
-      const cookiesData = getAllCookies();
-      
-      const { supabase } = await import('@/integrations/supabase/client');
-      await (supabase as any).from('user_data').upsert({
-        user_id: user.id,
-        local_storage: localStorageData,
-        cookies: cookiesData
-      }, { onConflict: 'user_id' });
-
-      // Set flag to prevent auto-save during clear
-      setLoggingOut(true);
-      
-      // Small delay to ensure save completes
-      await new Promise(resolve => setTimeout(resolve, 100));
-
-      // Clear ALL data
-      const keysToRemove = Object.keys(localStorage).filter(key => !key.includes('hideout_user'));
-      keysToRemove.forEach(key => localStorage.removeItem(key));
-      
-      Object.keys(cookiesData).forEach(name => {
-        document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
-      });
-
-      localStorage.removeItem('hideout_user');
-      sessionStorage.removeItem('hideout_user');
-      
-      toast.success("Logged out successfully - data saved to account");
+      toast.success("Logged out successfully");
       setShowLogoutDialog(false);
       onClose();
-      navigate('/');
+      navigate("/");
     } catch (error) {
-      console.error('Logout error:', error);
+      console.error("Logout error:", error);
       toast.error("Logout failed");
     }
   };
 
   const handleInspect = () => {
     // Dispatch event to open DevTools
-    window.dispatchEvent(new CustomEvent('hideout:toggle-devtools'));
+    window.dispatchEvent(new CustomEvent("hideout:toggle-devtools"));
     onClose();
   };
 
-  const handleRunAddon = (scriptUrl: string, inIframe: boolean = false) => {
-    if (inIframe && isGamePage) {
-      // Execute in iframe
-      const iframe = document.querySelector('iframe');
-      if (iframe && iframe.contentWindow) {
-        try {
-          const script = iframe.contentWindow.document.createElement('script');
-          script.src = scriptUrl;
-          script.onload = () => toast.success("Addon executed in game");
-          script.onerror = () => toast.error("Failed to run addon in game");
-          iframe.contentWindow.document.body.appendChild(script);
-        } catch (error) {
-          toast.error("Cannot access iframe");
+  const handleRunAddon = async (addon: any, inIframe: boolean = false) => {
+    const fullScriptUrl = `${addonsData.site}${addon.scriptUrl}`;
+    const idAttr = "data-hideout-addon";
+    const isExecuted = !!executedAddons[addon.scriptUrl];
+
+    const removeScriptsFromRoot = (root: Document | null) => {
+      if (!root) return 0;
+      const removed: string[] = [];
+      Array.from(root.querySelectorAll(`script[${idAttr}="${encodeURIComponent(addon.scriptUrl)}"]`)).forEach((s) => {
+        s.remove();
+        removed.push("ok");
+      });
+      return removed.length;
+    };
+
+    if (isExecuted) {
+      // Unexecute: remove scripts we inserted
+      try {
+        // Remove from main document
+        const removedMain = removeScriptsFromRoot(document);
+        // Remove from iframe if present
+        let removedIframe = 0;
+        if (inIframe && isGamePage) {
+          const iframe = document.getElementById("game-iframe") as HTMLIFrameElement | null;
+          if (iframe && iframe.contentWindow && iframe.contentWindow.document) {
+            removedIframe = removeScriptsFromRoot(iframe.contentWindow.document);
+          }
+        }
+
+        setExecutedAddons((prev) => {
+          const copy = { ...prev };
+          delete copy[addon.scriptUrl];
+          return copy;
+        });
+        toast.success("Addon unexecuted");
+      } catch (error) {
+        console.error("Unexecute error:", error);
+        toast.error("Failed to unexecute addon");
+      } finally {
+        onClose();
+      }
+      return;
+    }
+
+    // Execute
+    try {
+      if (inIframe && isGamePage) {
+        const iframe = document.getElementById("game-iframe") as HTMLIFrameElement | null;
+        if (iframe && iframe.contentWindow && iframe.contentWindow.document) {
+          try {
+            const script = iframe.contentWindow.document.createElement("script");
+            script.src = fullScriptUrl;
+            script.setAttribute(idAttr, encodeURIComponent(addon.scriptUrl));
+            iframe.contentWindow.document.body.appendChild(script);
+            setExecutedAddons((prev) => ({ ...prev, [addon.scriptUrl]: true }));
+            toast.success("Addon executed");
+          } catch (error) {
+            toast.error("Cannot inject into cross-origin iframe");
+            console.warn("Cross-origin iframe access blocked:", error);
+          }
+        } else {
+          toast.error("No game iframe found");
         }
       } else {
-        toast.error("No game iframe found");
+        const script = document.createElement("script");
+        script.src = fullScriptUrl;
+        script.setAttribute(idAttr, encodeURIComponent(addon.scriptUrl));
+        script.onload = () => {
+          setExecutedAddons((prev) => ({ ...prev, [addon.scriptUrl]: true }));
+          toast.success("Addon executed");
+        };
+        script.onerror = () => {
+          console.error("Failed to load addon from:", fullScriptUrl);
+          toast.error("Failed to run addon");
+        };
+        document.body.appendChild(script);
       }
-    } else {
-      // Execute on main site
-      const script = document.createElement('script');
-      script.src = scriptUrl;
-      script.onload = () => toast.success("Addon executed");
-      script.onerror = () => toast.error("Failed to run addon");
-      document.body.appendChild(script);
+    } catch (error) {
+      console.error("Execute error:", error);
+      toast.error("Failed to run addon");
+    } finally {
+      onClose();
     }
-    onClose();
   };
-
   return (
     <>
-      <div
-        className="fixed inset-0 z-[9998]"
-        onClick={onClose}
-      />
+      <div className="fixed inset-0 z-[9998]" onClick={onClose} />
       <div
         className="fixed z-[9999] bg-card border border-border rounded-lg shadow-2xl py-1 min-w-[220px] backdrop-blur-xl"
         style={{ top: y, left: x }}
@@ -245,23 +271,19 @@ export const ContextMenu = ({ x, y, onClose, isOnBrowser }: ContextMenuProps) =>
 
         <div className="my-1 border-t border-border" />
 
-        <div
-          className="relative"
-          onMouseEnter={() => installedAddons.length > 0 && setShowAddonSubmenu(true)}
-          onMouseLeave={() => {
-            setShowAddonSubmenu(false);
-            setHoveredAddonId(null);
-          }}
-        >
+        <div className="relative">
           <button
-            onClick={() => installedAddons.length > 0 && setShowAddonSubmenu(!showAddonSubmenu)}
+            onMouseEnter={() => setShowAddonSubmenu(true)}
+            onMouseLeave={() => setShowAddonSubmenu(false)}
             disabled={installedAddons.length === 0}
             className={`w-full px-4 py-2.5 text-left text-sm flex items-center justify-between gap-3 transition-colors ${
-              installedAddons.length > 0 ? 'hover:bg-muted/50' : 'opacity-50 cursor-not-allowed'
+              installedAddons.length > 0
+                ? "hover:bg-muted/50"
+                : "opacity-50 cursor-not-allowed"
             }`}
           >
             <div className="flex items-center gap-3">
-              <img src={addonIcon} alt="" className="w-4 h-4" />
+              <Puzzle className="w-4 h-4" />
               Add-ons
             </div>
             <span className="text-xs">›</span>
@@ -269,52 +291,57 @@ export const ContextMenu = ({ x, y, onClose, isOnBrowser }: ContextMenuProps) =>
 
           {showAddonSubmenu && installedAddons.length > 0 && (
             <div
-              className="fixed bg-card border border-border rounded-lg shadow-2xl py-1 min-w-[200px] max-h-[300px] overflow-y-auto backdrop-blur-xl z-[10000]"
-              style={{ top: y, left: x + 220 }}
               onMouseEnter={() => setShowAddonSubmenu(true)}
+              onMouseLeave={() => {
+                setShowAddonSubmenu(false);
+                setHoveredAddonId(null);
+              }}
+              className="absolute left-full -top-1 -ml-1 bg-card border border-border rounded-lg shadow-2xl min-w-[200px] max-h-[300px] backdrop-blur-xl z-[10000]"
             >
-              {installedAddons.map((addon) => (
-                <div 
-                  key={addon.id}
-                  className="relative"
-                  onMouseEnter={() => setHoveredAddonId(addon.id)}
-                  onMouseLeave={() => setHoveredAddonId(null)}
-                >
-                  <button
-                    className="w-full px-4 py-2.5 text-left text-sm hover:bg-muted/50 flex items-center justify-between gap-3 transition-colors"
+              <div className="py-1 max-h-[300px] overflow-y-auto">
+                {installedAddons.map((addon) => (
+                  <div
+                    key={addon.id}
+                    className="relative"
+                    onMouseEnter={() => setHoveredAddonId(addon.id)}
+                    onMouseLeave={() => setHoveredAddonId(null)}
                   >
-                    <div className="flex items-center gap-3">
-                      <img src={addon.icon} alt="" className="w-4 h-4 rounded" />
-                      <span className="truncate">{addon.name}</span>
-                    </div>
-                    <span className="text-xs">›</span>
-                  </button>
-                  
-                  {hoveredAddonId === addon.id && (
-                    <div
-                      className="fixed bg-card border border-border rounded-lg shadow-2xl py-1 min-w-[160px] backdrop-blur-xl z-[10001]"
-                      style={{ top: y + (installedAddons.indexOf(addon) * 45), left: x + 420 }}
-                      onMouseEnter={() => setHoveredAddonId(addon.id)}
-                    >
-                      <button
-                        onClick={() => handleRunAddon(addon.scriptUrl, false)}
-                        className="w-full px-4 py-2.5 text-left text-sm hover:bg-muted/50 transition-colors"
+                    <button className="w-full px-4 py-2.5 text-left text-sm hover:bg-muted/50 flex items-center justify-between gap-3 transition-colors">
+                      <div className="flex items-center gap-3">
+                        <img
+                          src={`${addonsData.site}${addon.iconPath}`}
+                          alt=""
+                          className="w-4 h-4 rounded"
+                        />
+                        <span className="truncate">{addon.name}</span>
+                      </div>
+                      <span className="text-xs">›</span>
+                    </button>
+
+                    {hoveredAddonId === addon.id && (
+                      <div
+                        className="fixed left-[12.1rem] top-0 bg-card border border-border rounded-lg shadow-2xl py-1 min-w-[160px] backdrop-blur-xl z-[10001]"
                       >
-                        Execute
-                      </button>
-                      <button
-                        onClick={() => handleRunAddon(addon.scriptUrl, true)}
-                        disabled={!isGamePage}
-                        className={`w-full px-4 py-2.5 text-left text-sm transition-colors ${
-                          isGamePage ? 'hover:bg-muted/50' : 'opacity-50 cursor-not-allowed'
-                        }`}
-                      >
-                        Execute in iframe
-                      </button>
-                    </div>
-                  )}
-                </div>
-              ))}
+                        <button
+                          onClick={() => handleRunAddon(addon.scriptUrl, false)}
+                          className="w-full px-4 py-2.5 text-left text-sm hover:bg-muted/50 transition-colors"
+                        >
+                          {executedAddons[addon.scriptUrl] ? "Unexecute" : "Execute"}
+                        </button>
+
+                        {/* Execute in iframe remains disabled - clicking main Execute can toggle unexecute */}
+                        <button
+                          disabled
+                          title="Comming soon..."
+                          className="w-full px-4 py-2.5 text-left text-sm opacity-50 cursor-not-allowed"
+                        >
+                          Execute in iframe
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
             </div>
           )}
         </div>
@@ -325,7 +352,7 @@ export const ContextMenu = ({ x, y, onClose, isOnBrowser }: ContextMenuProps) =>
           onClick={handleSaveToAccount}
           disabled={!user}
           className={`w-full px-4 py-2.5 text-left text-sm flex items-center gap-3 transition-colors ${
-            user ? 'hover:bg-muted/50' : 'opacity-50 cursor-not-allowed'
+            user ? "hover:bg-muted/50" : "opacity-50 cursor-not-allowed"
           }`}
         >
           <Save className="w-4 h-4" />
@@ -351,7 +378,9 @@ export const ContextMenu = ({ x, y, onClose, isOnBrowser }: ContextMenuProps) =>
           onClick={handleLogout}
           disabled={!user}
           className={`w-full px-4 py-2.5 text-left text-sm flex items-center gap-3 transition-colors ${
-            user ? 'hover:bg-destructive/10 hover:text-destructive' : 'opacity-50 cursor-not-allowed'
+            user
+              ? "hover:bg-destructive/10 hover:text-destructive"
+              : "opacity-50 cursor-not-allowed"
           }`}
         >
           <LogOut className="w-4 h-4" />
@@ -369,7 +398,9 @@ export const ContextMenu = ({ x, y, onClose, isOnBrowser }: ContextMenuProps) =>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={confirmLogout}>Logout</AlertDialogAction>
+            <AlertDialogAction onClick={confirmLogout}>
+              Logout
+            </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

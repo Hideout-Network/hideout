@@ -1,22 +1,24 @@
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Gamepad2, AppWindow, Globe, HelpCircle, Settings, User } from "lucide-react";
-import versionData from "@/data/version.json";
-import addonIcon from "@/assets/addon-icon.png";
+import { Gamepad2, AppWindow, Globe, HelpCircle, Settings, Puzzle } from "lucide-react";
+import updatesData from "@/jsons/updates.json";
 
 const navItems = [
   { label: "Games", href: "/games", icon: Gamepad2 },
   { label: "Apps", href: "/apps", icon: AppWindow },
   { label: "Browser", href: "/browser", icon: Globe },
-  { label: "Add-Ons", href: "/addons", icon: null, customIcon: addonIcon },
+  { label: "Add-Ons", href: "/addons", icon: Puzzle },
   { label: "Help", href: "/help", icon: HelpCircle },
   { label: "Settings", href: "/settings", icon: Settings },
-  { label: "Account", href: "/account", icon: User },
 ];
 
 export const Navigation = () => {
   const location = useLocation();
   const activeTab = location.pathname.slice(1) || "home";
+  
+  // Get latest version from updates
+  const latestUpdate = updatesData[0];
+  const currentVersion = latestUpdate?.version || "V2 Prebeta";
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 animate-slide-in-top">
@@ -33,7 +35,7 @@ export const Navigation = () => {
                 className="text-xs text-muted-foreground hover:text-primary transition-colors"
                 onClick={(e) => e.stopPropagation()}
               >
-                {versionData.version}
+                {currentVersion}
               </Link>
             </div>
           </Link>
@@ -50,11 +52,7 @@ export const Navigation = () => {
                     asChild
                   >
                     <Link to={item.href} className="relative flex items-center gap-2">
-                      {item.customIcon ? (
-                        <img src={item.customIcon} alt="" className="w-4 h-4" />
-                      ) : Icon ? (
-                        <Icon className="w-4 h-4" />
-                      ) : null}
+                      {Icon && <Icon className="w-4 h-4" />}
                       {item.label}
                       {activeTab === item.label.toLowerCase() && (
                         <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-primary/10 rounded-full blur-xl -z-10" />
