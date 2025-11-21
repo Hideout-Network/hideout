@@ -50,7 +50,7 @@ const App = () => {
     const loadSettings = async () => {
       try {
         // Fetch themes data from remote URL
-        const response = await fetch('https://hideout-network.github.io/hideout-assets/themes/themes.json');
+        const response = await fetch('https://cdn.jsdelivr.net/gh/Hideout-Network/hideout-assets/themes/themes.json');
         const themesData: ThemesData = await response.json();
 
         // Clean up old theme storage - only use hideout_settings
