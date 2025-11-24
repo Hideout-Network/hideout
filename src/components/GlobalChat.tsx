@@ -31,6 +31,9 @@ export const GlobalChat = () => {
   const [showUsernameDialog, setShowUsernameDialog] = useState(false);
   const [tempUsername, setTempUsername] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  
+  // Check if Supabase is configured
+  const isChatEnabled = supabase !== null;
 
   useEffect(() => {
     const saved = localStorage.getItem('hideout_chat_username');
@@ -40,7 +43,7 @@ export const GlobalChat = () => {
   }, []);
 
   useEffect(() => {
-    if (isOpen) {
+    if (isOpen && isChatEnabled) {
       if (!username) {
         setShowUsernameDialog(true);
       } else {
@@ -48,9 +51,10 @@ export const GlobalChat = () => {
         subscribeToMessages();
       }
     }
-  }, [isOpen, username]);
+  }, [isOpen, username, isChatEnabled]);
 
   const fetchMessages = async () => {
+    if (!supabase) return;
     try {
       const { data, error } = await (supabase as any)
         .from('global_chat')
@@ -68,6 +72,7 @@ export const GlobalChat = () => {
   };
 
   const subscribeToMessages = () => {
+    if (!supabase) return;
     const channel = supabase
       .channel('global_chat_realtime')
       .on(
@@ -133,7 +138,7 @@ export const GlobalChat = () => {
 
   const sendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newMessage.trim() || !username) return;
+    if (!supabase || !newMessage.trim() || !username) return;
 
     const content = newMessage.trim().slice(0, 500);
 
@@ -203,36 +208,52 @@ export const GlobalChat = () => {
             </Button>
           </div>
 
-          <ScrollArea className="flex-1 p-4">
-            {messages.map((msg) => (
-              <div key={msg.id} className="mb-3">
-                <div className="flex items-baseline gap-2">
-                  <span className="font-semibold text-sm text-primary">
-                    {msg.username}
-                  </span>
-                  <span className="text-xs text-muted-foreground">
-                    {formatTime(msg.created_at)}
-                  </span>
+          {!isChatEnabled ? (
+            <div className="flex-1 flex items-center justify-center p-6 text-center">
+              <div className="space-y-4">
+                <MessageSquare className="w-12 h-12 mx-auto text-muted-foreground" />
+                <div>
+                  <h4 className="font-semibold text-foreground mb-2">Chat Disabled</h4>
+                  <p className="text-sm text-muted-foreground">
+                    To enable chat, go to the GitHub repo for more help.
+                  </p>
                 </div>
-                <p className="text-sm mt-1">{msg.message}</p>
               </div>
-            ))}
-            <div ref={messagesEndRef} />
-          </ScrollArea>
+            </div>
+          ) : (
+            <>
+              <ScrollArea className="flex-1 p-4">
+                {messages.map((msg) => (
+                  <div key={msg.id} className="mb-3">
+                    <div className="flex items-baseline gap-2">
+                      <span className="font-semibold text-sm text-primary">
+                        {msg.username}
+                      </span>
+                      <span className="text-xs text-muted-foreground">
+                        {formatTime(msg.created_at)}
+                      </span>
+                    </div>
+                    <p className="text-sm mt-1">{msg.message}</p>
+                  </div>
+                ))}
+                <div ref={messagesEndRef} />
+              </ScrollArea>
 
-          <form onSubmit={sendMessage} className="p-4 border-t border-border flex gap-2">
-            <Input
-              value={newMessage}
-              onChange={(e) => setNewMessage(e.target.value)}
-              placeholder="Type a message..."
-              maxLength={500}
-              className="flex-1"
-            />
-            <EmojiPicker onEmojiSelect={(emoji) => setNewMessage(prev => prev + emoji)} />
-            <Button type="submit" size="icon">
-              <Send className="h-4 w-4" />
-            </Button>
-          </form>
+              <form onSubmit={sendMessage} className="p-4 border-t border-border flex gap-2">
+                <Input
+                  value={newMessage}
+                  onChange={(e) => setNewMessage(e.target.value)}
+                  placeholder="Type a message..."
+                  maxLength={500}
+                  className="flex-1"
+                />
+                <EmojiPicker onEmojiSelect={(emoji) => setNewMessage(prev => prev + emoji)} />
+                <Button type="submit" size="icon">
+                  <Send className="h-4 w-4" />
+                </Button>
+              </form>
+            </>
+          )}
         </div>
       )}
 
