@@ -1,6 +1,6 @@
 # Hideout
 
-An open-source unblocked gaming platform with 900+ games, proxy browser, and global chat.
+An open-source unblocked gaming platform with 200+ games, proxy browser, and global chat.
 
 ## Quick Start
 
@@ -17,13 +17,15 @@ Visit `http://localhost:8080`
 npm run build
 ```
 
+Deploy the `dist` folder to any static host.
+
 ## Contributing
 
-Add games, themes, addons, about:blank presets and more at [hideout-assets](https://github.com/Hideout-Network/hideout-assets)
+Add games, themes, or addons at [hideout-assets](https://github.com/Hideout-Network/hideout-assets)
 
 ## Links
 
-[![Discord](https://img.shields.io/badge/Discord-Join_Server-5865F2?style=for-the-badge&logo=discord&logoColor=white)](https://discord.gg/w9WGqnAauF)
+[![Discord](https://img.shields.io/badge/Discord-Join_Server-5865F2?style=for-the-badge&logo=discord&logoColor=white)](https://discord.gg/HkbVraQH89)
 [![Report Bug](https://img.shields.io/badge/Report_Bug-Issues-red?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Hideout-Network/hideout/issues)
 
 ## License
