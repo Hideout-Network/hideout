@@ -25,7 +25,7 @@ Add games, themes, addons, about:blank presets and more at [hideout-assets](http
 
 ## Links
 
-[![Discord](https://img.shields.io/badge/Discord-Join_Server-5865F2?style=for-the-badge&logo=discord&logoColor=white)](https://discord.gg/HkbVraQH89)
+[![Discord](https://img.shields.io/badge/Discord-Join_Server-5865F2?style=for-the-badge&logo=discord&logoColor=white)](https://discord.gg/w9WGqnAauF)
 [![Report Bug](https://img.shields.io/badge/Report_Bug-Issues-red?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Hideout-Network/hideout/issues)
 
 ## License
