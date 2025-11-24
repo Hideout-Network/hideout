@@ -1,5 +1,14 @@
 [
   {
+    "updateNumber": 4,
+    "version": "v1.0.0",
+    "updateDate": "2025-11-24",
+    "githubLink": "",
+    "changes": [
+      "🚀 v1.0.0 Release!"
+    ]
+  },
+  {
     "updateNumber": 3,
     "version": "v0.5.0 Alpha",
     "updateDate": "2025-11-10",
