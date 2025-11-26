@@ -12,6 +12,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { GlobalChat } from "@/components/GlobalChat";
 import { usePageTitle } from "@/hooks/use-page-title";
 import { StarBackground } from "@/components/StarBackground";
+import { useRewardedFullscreen } from "@/hooks/use-rewarded-fullscreen";
 import eruda from "eruda";
 
 // Browser configuration
@@ -133,6 +134,7 @@ const Browser = () => {
   const erudaContainerRef = useRef<HTMLDivElement>(null);
   const nextTabId = useRef(2);
   const saveTimeoutRef = useRef<NodeJS.Timeout>();
+  const { requestFullscreenWithAd } = useRewardedFullscreen();
 
   const activeTab = tabs.find(t => t.id === activeTabId);
 
@@ -832,8 +834,9 @@ const Browser = () => {
       if (iframe && !isInternalPage(activeTab?.url || '') && activeTab?.url) {
         if (document.fullscreenElement) {
           document.exitFullscreen();
-        } else if (iframe.requestFullscreen) {
-          iframe.requestFullscreen();
+        } else {
+          // Show rewarded ad before granting fullscreen
+          requestFullscreenWithAd(iframe);
         }
       } else {
         toast.info("Load a page first to fullscreen");

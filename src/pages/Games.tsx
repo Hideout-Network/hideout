@@ -11,6 +11,7 @@ import { usePageTitle } from "@/hooks/use-page-title";
 import { GameLoader } from "@/components/GameLoader";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { useRewardedFullscreen } from "@/hooks/use-rewarded-fullscreen";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -53,6 +54,7 @@ const Games = () => {
   const [loadError, setLoadError] = useState<string | null>(null);
   const [failedImages, setFailedImages] = useState<Set<number>>(new Set());
   const { toast } = useToast();
+  const { requestFullscreenWithAd } = useRewardedFullscreen();
 
   useEffect(() => {
     const settings = localStorage.getItem('hideout_settings');
@@ -226,8 +228,8 @@ const Games = () => {
 
   const handleFullscreen = () => {
     const iframe = document.getElementById("game-iframe") as HTMLIFrameElement;
-    if (iframe?.requestFullscreen) {
-      iframe.requestFullscreen();
+    if (iframe) {
+      requestFullscreenWithAd(iframe);
     }
   };
 

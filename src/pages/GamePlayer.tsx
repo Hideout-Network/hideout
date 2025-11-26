@@ -9,6 +9,7 @@ import { GameLoader } from "@/components/GameLoader";
 import { BatteryWarning } from "@/components/BatteryWarning";
 import { FPSCounter } from "@/components/FPSCounter";
 import { StarBackground } from "@/components/StarBackground";
+import { useRewardedFullscreen } from "@/hooks/use-rewarded-fullscreen";
 
 const ZONES_URLS = [
   "https://cdn.jsdelivr.net/gh/gn-math/assets@main/zones.json",
@@ -37,6 +38,7 @@ const GamePlayer = () => {
   const [gameLoaded, setGameLoaded] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [showFPS, setShowFPS] = useState(false);
+  const { requestFullscreenWithAd } = useRewardedFullscreen();
 
   useEffect(() => {
     const settings = JSON.parse(localStorage.getItem('hideout_settings') || '{}');
@@ -184,10 +186,8 @@ const GamePlayer = () => {
     const iframe = document.getElementById("game-iframe") as HTMLIFrameElement;
     if (iframe) {
       if (!isFullscreen) {
-        if (iframe.requestFullscreen) {
-          iframe.requestFullscreen();
-          setIsFullscreen(true);
-        }
+        // Show rewarded ad before granting fullscreen
+        requestFullscreenWithAd(iframe);
       } else {
         if (document.exitFullscreen) {
           document.exitFullscreen();
