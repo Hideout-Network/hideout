@@ -257,7 +257,12 @@ export const GlobalChat = () => {
         </div>
       )}
 
-      <Dialog open={showUsernameDialog} onOpenChange={setShowUsernameDialog}>
+      <Dialog open={showUsernameDialog} onOpenChange={(open) => {
+        setShowUsernameDialog(open);
+        if (!open) {
+          setIsOpen(false); // Close chat if dialog is dismissed without entering name
+        }
+      }}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle>Choose Your Name</DialogTitle>

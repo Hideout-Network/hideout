@@ -1,6 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Gamepad2, AppWindow, Globe, HelpCircle, Settings, Puzzle, Users } from "lucide-react";
+import { Gamepad2, AppWindow, Globe, Settings, Puzzle, Bot } from "lucide-react";
 import updatesData from "@/jsons/updates.json";
 
 const navItems = [
@@ -8,8 +8,7 @@ const navItems = [
   { label: "Apps", href: "/apps", icon: AppWindow },
   { label: "Browser", href: "/browser", icon: Globe },
   { label: "Add-Ons", href: "/addons", icon: Puzzle },
-  { label: "Help", href: "/help", icon: HelpCircle },
-  { label: "Credits", href: "/credits", icon: Users },
+  { label: "AI", href: "/ai", icon: Bot },
   { label: "Settings", href: "/settings", icon: Settings },
 ];
 
@@ -22,7 +21,7 @@ export const Navigation = () => {
   const currentVersion = latestUpdate?.version || "V2 Prebeta";
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 animate-slide-in-top">
+    <nav className="fixed top-0 left-0 right-0 z-50">
       <div className="w-full px-2 sm:px-4 py-2 sm:py-4">
         <div className="flex flex-col sm:flex-row items-center justify-between gap-2 sm:gap-0">
           {/* Logo with rounded container */}

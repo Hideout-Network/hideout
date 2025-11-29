@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 
 interface GameLoaderProps {
   gameName: string;
@@ -9,23 +9,45 @@ interface GameLoaderProps {
 export const GameLoader = ({ gameName, gameImage, onLoadComplete }: GameLoaderProps) => {
   const [progress, setProgress] = useState(0);
   const [isFadingOut, setIsFadingOut] = useState(false);
+  const [imageLoaded, setImageLoaded] = useState(false);
+  const minDuration = 15000; // Minimum 15 seconds
+  const startTimeRef = useRef(Date.now());
+  const progressRef = useRef(0); // Use ref to track progress in animation loop
+  const animationRef = useRef<number | null>(null);
+  const completedRef = useRef(false);
+
+  // Preload the game image
+  useEffect(() => {
+    const img = new Image();
+    img.onload = () => setImageLoaded(true);
+    img.onerror = () => setImageLoaded(true); // Continue even if image fails
+    img.src = gameImage;
+  }, [gameImage]);
 
   useEffect(() => {
-    const duration = 8000; // 8 seconds
-    const startTime = Date.now();
-
     const animate = () => {
-      const elapsed = Date.now() - startTime;
-      const newProgress = Math.min(elapsed / duration, 1);
-      setProgress(newProgress);
-
-      if (newProgress < 1) {
-        requestAnimationFrame(animate);
+      if (completedRef.current) return;
+      
+      const elapsed = Date.now() - startTimeRef.current;
+      const minTimeReached = elapsed >= minDuration;
+      
+      if (!minTimeReached) {
+        // Progress from 0 to 95% over minDuration
+        const newProgress = Math.min((elapsed / minDuration) * 0.95, 0.95);
+        progressRef.current = newProgress;
+        setProgress(newProgress);
+        animationRef.current = requestAnimationFrame(animate);
+      } else if (!imageLoaded) {
+        // Min time reached but image not loaded - stay at 95%
+        progressRef.current = 0.95;
+        setProgress(0.95);
+        animationRef.current = requestAnimationFrame(animate);
       } else {
-        // Start fade out after reaching 100%
+        // Both min time reached and image loaded - complete
+        completedRef.current = true;
+        setProgress(1);
         setTimeout(() => {
           setIsFadingOut(true);
-          // Complete after fade animation
           setTimeout(() => {
             onLoadComplete();
           }, 800);
@@ -33,8 +55,14 @@ export const GameLoader = ({ gameName, gameImage, onLoadComplete }: GameLoaderPr
       }
     };
 
-    animate();
-  }, [onLoadComplete]);
+    animationRef.current = requestAnimationFrame(animate);
+    
+    return () => {
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+      }
+    };
+  }, [imageLoaded, onLoadComplete, minDuration]);
 
   const rotation = progress * 1080; // 3 full rotations
 
