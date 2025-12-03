@@ -26,13 +26,13 @@
   background: conic-gradient(
     from 0deg,
     transparent 0deg,
-    transparent 340deg,
-    hsl(var(--primary)) 350deg,
-    hsl(var(--primary)) 360deg
+    transparent 60deg,
+    hsl(var(--primary)) 120deg,
+    hsl(var(--primary) / 0.8) 180deg,
+    transparent 240deg,
+    transparent 360deg
   );
-  animation: border-rotate 3s linear infinite;
-  filter: blur(1px);
-  box-shadow: 0 0 20px hsl(var(--primary) / 0.6);
+  animation: border-rotate 4s linear infinite;
 }
 
 .search-border-glow::after {
