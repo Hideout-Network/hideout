@@ -63,8 +63,8 @@ const WELCOME_MESSAGES = [
 ];
 
 const MODELS: Model[] = [
-  // Auto - Automatically selects best model
-  { id: "auto", name: "Auto", logo: openaiLogo, supportsVision: true },
+  // Auto - Automatically selects best model (no icon, no vision indicator)
+  { id: "auto", name: "Auto", logo: "", supportsVision: false },
   // GPT OSS Models
   { id: "openai/gpt-oss-120b", name: "GPT OSS 120B", logo: openaiLogo },
   { id: "openai/gpt-oss-20b", name: "GPT OSS 20B", logo: openaiLogo },

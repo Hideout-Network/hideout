@@ -33,6 +33,17 @@ const Browser = () => {
   const location = useLocation();
   const initialUrl = (location.state as { initialUrl?: string })?.initialUrl;
   
+  // Show maintenance screen
+  return (
+    <div className="min-h-screen bg-black flex flex-col items-center justify-center">
+      <h1 className="text-3xl font-bold text-white mb-4">Browser Under Maintenance</h1>
+      <p className="text-muted-foreground mb-8">We're working on improvements. Check back soon!</p>
+      <Button onClick={() => navigate('/')} variant="outline">
+        Go Back
+      </Button>
+    </div>
+  );
+  
   const [tabs, setTabs] = useState<Tab[]>(() => {
     // Check if incognito mode is enabled
     const savedSettings = localStorage.getItem('hideout_settings');

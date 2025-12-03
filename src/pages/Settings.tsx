@@ -857,7 +857,7 @@ const SettingsPage = () => {
           <div className="flex flex-col lg:flex-row gap-6">
             {/* Sidebar */}
             <div className="lg:w-64 flex-shrink-0">
-              <div className="sticky top-24 space-y-2">
+              <Card className="sticky top-24 p-4 bg-card border-border">
                 {/* Search */}
                 <div className="relative mb-4">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -865,7 +865,7 @@ const SettingsPage = () => {
                     placeholder="Filter settings..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-9 bg-card border-border"
+                    className="pl-9 bg-muted border-border"
                   />
                 </div>
                 
@@ -894,7 +894,7 @@ const SettingsPage = () => {
                     Reset to Defaults
                   </Button>
                 </div>
-              </div>
+              </Card>
             </div>
 
             {/* Content */}

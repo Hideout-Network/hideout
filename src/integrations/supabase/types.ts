@@ -14,219 +14,23 @@ export type Database = {
   }
   public: {
     Tables: {
-      browser_data: {
-        Row: {
-          created_at: string
-          data: Json
-          data_type: string
-          id: string
-          updated_at: string
-          user_id: string
-        }
-        Insert: {
-          created_at?: string
-          data: Json
-          data_type: string
-          id?: string
-          updated_at?: string
-          user_id: string
-        }
-        Update: {
-          created_at?: string
-          data?: Json
-          data_type?: string
-          id?: string
-          updated_at?: string
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "browser_data_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      bug_reports: {
-        Row: {
-          created_at: string
-          description: string
-          id: string
-          page_section: string | null
-          status: string
-          title: string
-          user_id: string
-        }
-        Insert: {
-          created_at?: string
-          description: string
-          id?: string
-          page_section?: string | null
-          status?: string
-          title: string
-          user_id: string
-        }
-        Update: {
-          created_at?: string
-          description?: string
-          id?: string
-          page_section?: string | null
-          status?: string
-          title?: string
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "bug_reports_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      favorites: {
-        Row: {
-          created_at: string
-          game_name: string
-          id: string
-          user_id: string
-        }
-        Insert: {
-          created_at?: string
-          game_name: string
-          id?: string
-          user_id: string
-        }
-        Update: {
-          created_at?: string
-          game_name?: string
-          id?: string
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "favorites_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      game_requests: {
-        Row: {
-          created_at: string
-          details: string | null
-          game_name: string
-          id: string
-          source_url: string | null
-          status: string
-          user_id: string
-        }
-        Insert: {
-          created_at?: string
-          details?: string | null
-          game_name: string
-          id?: string
-          source_url?: string | null
-          status?: string
-          user_id: string
-        }
-        Update: {
-          created_at?: string
-          details?: string | null
-          game_name?: string
-          id?: string
-          source_url?: string | null
-          status?: string
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "game_requests_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       global_chat: {
         Row: {
           created_at: string
-          id: string
+          id: number
           message: string
-          user_id: string
+          username: string
         }
         Insert: {
           created_at?: string
-          id?: string
+          id?: number
           message: string
-          user_id: string
+          username: string
         }
         Update: {
           created_at?: string
-          id?: string
+          id?: number
           message?: string
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "global_chat_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      profiles: {
-        Row: {
-          avatar_url: string | null
-          created_at: string
-          id: string
-          updated_at: string
-          username: string
-        }
-        Insert: {
-          avatar_url?: string | null
-          created_at?: string
-          id: string
-          updated_at?: string
-          username: string
-        }
-        Update: {
-          avatar_url?: string | null
-          created_at?: string
-          id?: string
-          updated_at?: string
-          username?: string
-        }
-        Relationships: []
-      }
-      users: {
-        Row: {
-          created_at: string
-          id: string
-          last_active: string
-          password_hash: string
-          username: string
-        }
-        Insert: {
-          created_at?: string
-          id?: string
-          last_active?: string
-          password_hash: string
-          username: string
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          last_active?: string
-          password_hash?: string
           username?: string
         }
         Relationships: []
@@ -236,10 +40,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      generate_username: {
-        Args: { user_id: string }
-        Returns: string
-      }
+      generate_username: { Args: { user_id: string }; Returns: string }
     }
     Enums: {
       [_ in never]: never
