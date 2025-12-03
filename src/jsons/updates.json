@@ -1,5 +1,20 @@
 [
   {
+    "updateNumber": 6,
+    "version": "v1.1.1",
+    "updateDate": "2025-12-02",
+    "githubLink": "https://github.com/Hideout-Network/hideout/releases/tag/v1.1.1",
+    "changes": [
+      "Updated settings ui",
+      "Fixed sometimes you click a game and it does not choose the correct game",
+      "Added new games",
+      "Changed browser to say Browser Under Maintenance should be fixed later",
+      "🎮 Updated the games layout to look like Poki!",
+      "Updated home page ui",
+      "Updated menu at the bottom right of the page"
+    ]
+  },
+  {
     "updateNumber": 5,
     "version": "v1.1.0",
     "updateDate": "2025-11-29",
