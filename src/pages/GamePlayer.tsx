@@ -8,7 +8,7 @@ import { toast } from "sonner";
 import { GameLoader } from "@/components/GameLoader";
 import { BatteryWarning } from "@/components/BatteryWarning";
 import { FPSCounter } from "@/components/FPSCounter";
-import { GridBackground } from "@/components/GridBackground";
+import { StarBackground } from "@/components/StarBackground";
 
 const ZONES_URLS = [
   "https://cdn.jsdelivr.net/gh/gn-math/assets@main/zones.json",
@@ -232,7 +232,7 @@ const GamePlayer = () => {
 
   return (
     <div className="min-h-screen bg-background relative">
-      <GridBackground />
+      <StarBackground />
       <BatteryWarning isGamePage={true} />
       <div className="absolute top-0 left-0 right-0 z-50">
         <Navigation />

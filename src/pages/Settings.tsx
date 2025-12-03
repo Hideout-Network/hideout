@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, Link } from "react-router-dom";
 import { Navigation } from "@/components/Navigation";
 import { GlobalChat } from "@/components/GlobalChat";
 import { Card } from "@/components/ui/card";
@@ -8,8 +8,7 @@ import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
-import { Settings, Bell, Palette, Database, Trash2, Globe, Zap, Activity, MousePointer2, Search } from "lucide-react";
-import { Slider } from "@/components/ui/slider";
+import { Settings, Bell, Palette, Database, Trash2, Globe, Zap, Activity } from "lucide-react";
 import { toast } from "sonner";
 import {
   AlertDialog,
@@ -23,10 +22,9 @@ import {
 } from "@/components/ui/alert-dialog";
 import { supabase } from "@/integrations/supabase/client";
 import { usePageTitle } from "@/hooks/use-page-title";
-import { GridBackground } from "@/components/GridBackground";
+import { StarBackground } from "@/components/StarBackground";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useThemeSystem } from "@/hooks/use-theme-system";
-import { cn } from "@/lib/utils";
 
 type SettingsData = {
   reducedMotion: boolean;
@@ -41,23 +39,7 @@ type SettingsData = {
   selectedTheme: string;
   aboutBlankFavicon?: string;
   aboutBlankTabName?: string;
-  customCursorEnabled?: boolean;
-  cursorSmoothness?: number;
-  cursorSize?: number;
 };
-
-type SettingsSection = 'appearance' | 'data' | 'permissions' | 'browser' | 'performance' | 'cursor' | 'updates' | 'aboutblank';
-
-const SETTINGS_SECTIONS: { id: SettingsSection; label: string; icon: React.ReactNode }[] = [
-  { id: 'appearance', label: 'Appearance', icon: <Palette className="w-4 h-4" /> },
-  { id: 'data', label: 'Data & Storage', icon: <Database className="w-4 h-4" /> },
-  { id: 'permissions', label: 'Permissions', icon: <Bell className="w-4 h-4" /> },
-  { id: 'browser', label: 'Browser', icon: <Globe className="w-4 h-4" /> },
-  { id: 'performance', label: 'Performance', icon: <Zap className="w-4 h-4" /> },
-  { id: 'cursor', label: 'Custom Cursor', icon: <MousePointer2 className="w-4 h-4" /> },
-  { id: 'updates', label: 'Updates', icon: <Activity className="w-4 h-4" /> },
-  { id: 'aboutblank', label: 'About:blank', icon: <Globe className="w-4 h-4" /> },
-];
 
 const SettingsPage = () => {
   usePageTitle('Settings');
@@ -65,8 +47,6 @@ const SettingsPage = () => {
   const fromBrowser = (location.state as { fromBrowser?: boolean })?.fromBrowser;
   const [user, setUser] = useState<any>(null);
   const { themesData, currentThemeId, isLoading: themesLoading, changeTheme } = useThemeSystem();
-  const [activeSection, setActiveSection] = useState<SettingsSection>('appearance');
-  const [searchQuery, setSearchQuery] = useState('');
   
   const [settings, setSettings] = useState<SettingsData>({
     reducedMotion: false,
@@ -81,9 +61,6 @@ const SettingsPage = () => {
     selectedTheme: '',
     aboutBlankFavicon: '',
     aboutBlankTabName: 'Hideout',
-    customCursorEnabled: false,
-    cursorSmoothness: 0.65,
-    cursorSize: 36,
   });
   
   const [clipboardEnabled, setClipboardEnabled] = useState(false);
@@ -139,9 +116,6 @@ const SettingsPage = () => {
         selectedTheme: currentThemeId,
         aboutBlankFavicon: '',
         aboutBlankTabName: 'Hideout',
-        customCursorEnabled: false,
-        cursorSmoothness: 0.65,
-        cursorSize: 36,
       };
       
       if (savedSettings) {
@@ -252,9 +226,6 @@ const SettingsPage = () => {
     // Apply settings immediately
     applySettings(newSettings);
     
-    // Dispatch event for cursor settings changes
-    window.dispatchEvent(new Event('cursorSettingsChanged'));
-    
     toast.success("Settings saved", { duration: 2000 });
   };
 
@@ -290,6 +261,38 @@ const SettingsPage = () => {
     }
   };
 
+  const handleClearLocalStorage = () => {
+    const storedUser = localStorage.getItem('hideout_user') || sessionStorage.getItem('hideout_user');
+    
+    localStorage.clear();
+    
+    if (storedUser) {
+      toast.info("Local storage cleared - you have been logged out", { duration: 5000 });
+      window.location.href = '/';
+    } else {
+      toast.success("Local storage cleared successfully!", { duration: 5000 });
+    }
+  };
+
+  const handleClearCookies = () => {
+    const storedUser = localStorage.getItem('hideout_user') || sessionStorage.getItem('hideout_user');
+    
+    // Clear session storage
+    sessionStorage.clear();
+    
+    // Clear cookies (if any)
+    document.cookie.split(";").forEach((c) => {
+      document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
+    });
+    
+    if (storedUser) {
+      toast.info("Cookies cleared - you have been logged out", { duration: 5000 });
+      window.location.href = '/';
+    } else {
+      toast.success("Cookies cleared successfully!", { duration: 5000 });
+    }
+  };
+
   const handleResetDefaults = () => {
     if (!themesData) return;
 
@@ -306,9 +309,6 @@ const SettingsPage = () => {
       selectedTheme: themesData['main-theme'],
       aboutBlankFavicon: '',
       aboutBlankTabName: 'Hideout',
-      customCursorEnabled: false,
-      cursorSmoothness: 0.65,
-      cursorSize: 36,
     };
     
     setSettings(defaultSettings);
@@ -397,66 +397,75 @@ const SettingsPage = () => {
     }
   };
 
-  // Filter sections based on search
-  const filteredSections = SETTINGS_SECTIONS.filter(section => 
-    section.label.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
   if (themesLoading || !themesData) {
     return (
-      <div className="min-h-screen bg-background relative">
-        <GridBackground />
-        <Navigation />
-        <div className="flex items-center justify-center min-h-[calc(100vh-6rem)]">
-          <div className="flex flex-col items-center gap-4">
-            <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin" />
-            <p className="text-muted-foreground">Loading settings...</p>
-          </div>
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+          <p className="text-muted-foreground">Loading settings...</p>
         </div>
       </div>
     );
   }
 
-  const renderContent = () => {
-    switch (activeSection) {
-      case 'appearance':
-        return (
-          <div className="space-y-6">
-            <div>
-              <h2 className="text-2xl font-semibold mb-2">Appearance</h2>
-              <p className="text-muted-foreground">Customize how Hideout looks</p>
+  return (
+    <div className="min-h-screen bg-background relative">
+      <StarBackground />
+      <Navigation />
+      <GlobalChat />
+
+      <main className="pt-24 px-4 sm:px-6 pb-12 max-w-4xl mx-auto relative z-10">
+        {fromBrowser && (
+          <div className="mb-8 p-8 bg-card border border-border rounded-lg text-center animate-fade-in">
+            <h2 className="text-2xl font-bold mb-2">🚧 Under Construction</h2>
+            <p className="text-muted-foreground">Browser-specific settings are coming soon!</p>
+          </div>
+        )}
+        
+        {/* Header */}
+        <div className="space-y-6 mb-12 animate-fade-in">
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
+              <Settings className="w-6 h-6 text-primary" />
             </div>
-            <Separator />
-            <div className="space-y-6">
-              <div className="flex items-center justify-between py-3">
+            <div>
+              <h1 className="text-3xl sm:text-4xl font-bold text-foreground">Settings</h1>
+              <p className="text-muted-foreground text-sm sm:text-base">Manage your preferences and account</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="space-y-6">
+          {/* Appearance Settings */}
+          <Card className="p-4 sm:p-6 bg-card border-border">
+            <div className="flex items-center gap-3 mb-4">
+              <Palette className="w-5 h-5 text-primary" />
+              <h2 className="text-lg sm:text-xl font-semibold">Appearance</h2>
+            </div>
+            <Separator className="mb-4" />
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
-                  <Label className="text-base">Reduced Motion</Label>
-                  <p className="text-sm text-muted-foreground">Minimize animations throughout the interface</p>
+                  <Label>Reduced Motion</Label>
+                  <p className="text-sm text-muted-foreground">Minimize animations</p>
                 </div>
                 <Switch 
                   checked={settings.reducedMotion} 
                   onCheckedChange={(v) => handleChange('reducedMotion', v)} 
                 />
               </div>
-              <Separator />
-              <div className="flex items-center justify-between py-3">
+              <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
-                  <Label className="text-base">High Contrast</Label>
-                  <p className="text-sm text-muted-foreground">Increase color contrast for better visibility</p>
+                  <Label>High Contrast</Label>
+                  <p className="text-sm text-muted-foreground">Increase color contrast</p>
                 </div>
                 <Switch 
                   checked={settings.highContrast} 
                   onCheckedChange={(v) => handleChange('highContrast', v)} 
                 />
               </div>
-              <Separator />
-              <div className="py-3">
-                <div className="flex items-center justify-between mb-3">
-                  <div className="space-y-0.5">
-                    <Label className="text-base">Font Size</Label>
-                    <p className="text-sm text-muted-foreground">Adjust the base font size</p>
-                  </div>
-                </div>
+              <div className="space-y-2">
+                <Label>Font Size</Label>
                 <div className="flex gap-2">
                   {(['small', 'medium', 'large'] as const).map((size) => (
                     <Button
@@ -471,75 +480,56 @@ const SettingsPage = () => {
                   ))}
                 </div>
               </div>
-              <Separator />
-              <div className="py-3">
-                <div className="flex items-center justify-between mb-3">
-                  <div className="space-y-0.5">
-                    <Label className="text-base">Theme</Label>
-                    <p className="text-sm text-muted-foreground">Choose your preferred color theme</p>
-                  </div>
-                </div>
-                {(() => {
-                  const effectiveThemeId = currentThemeId || themesData['main-theme'];
-                  const selectedTheme = themesData.themes.find(t => t.id === effectiveThemeId);
-                  return (
-                    <Select 
-                      value={effectiveThemeId} 
-                      onValueChange={handleThemeChange}
-                    >
-                      <SelectTrigger className="w-full max-w-xs">
-                        <SelectValue>
-                          {selectedTheme?.name || 'Default Dark'}
-                        </SelectValue>
-                      </SelectTrigger>
-                      <SelectContent className="max-h-60 overflow-y-auto custom-scrollbar bg-popover">
-                        {themesData.themes.map((theme) => (
-                          <SelectItem key={theme.id} value={theme.id}>
-                            {theme.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  );
-                })()}
+              <div className="space-y-2">
+                <Label>Theme</Label>
+                <Select value={currentThemeId} onValueChange={handleThemeChange}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select a theme" />
+                  </SelectTrigger>
+                  <SelectContent className="max-h-60 overflow-y-auto custom-scrollbar">
+                    {themesData.themes.map((theme) => (
+                      <SelectItem key={theme.id} value={theme.id}>
+                        {theme.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
             </div>
-          </div>
-        );
+          </Card>
 
-      case 'data':
-        return (
-          <div className="space-y-6">
-            <div>
-              <h2 className="text-2xl font-semibold mb-2">Data & Storage</h2>
-              <p className="text-muted-foreground">Manage your local data and storage</p>
+          {/* Data Settings */}
+          <Card className="p-4 sm:p-6 bg-card border-border">
+            <div className="flex items-center gap-3 mb-4">
+              <Database className="w-5 h-5 text-primary" />
+              <h2 className="text-lg sm:text-xl font-semibold">Data & Storage</h2>
             </div>
-            <Separator />
-            <div className="flex items-center justify-between py-3">
-              <div className="space-y-0.5">
-                <Label className="text-base">Clear All Data</Label>
-                <p className="text-sm text-muted-foreground">Delete all local data, cookies, and cache. This action cannot be undone.</p>
-              </div>
-              <Button variant="destructive" size="sm" onClick={() => setShowClearDataDialog(true)} className="gap-2">
-                <Trash2 className="w-4 h-4" />
-                Clear Data
-              </Button>
-            </div>
-          </div>
-        );
-
-      case 'permissions':
-        return (
-          <div className="space-y-6">
-            <div>
-              <h2 className="text-2xl font-semibold mb-2">Permissions</h2>
-              <p className="text-muted-foreground">Manage browser permissions</p>
-            </div>
-            <Separator />
-            <div className="space-y-6">
-              <div className="flex items-center justify-between py-3">
+            <Separator className="mb-4" />
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
-                  <Label className="text-base">Notifications</Label>
+                  <Label>Clear Data</Label>
+                  <p className="text-sm text-muted-foreground">Delete all local data, cookies, and cache</p>
+                </div>
+                <Button variant="destructive" size="sm" onClick={() => setShowClearDataDialog(true)} className="gap-2">
+                  <Trash2 className="w-4 h-4" />
+                  Clear Data
+                </Button>
+              </div>
+            </div>
+          </Card>
+
+          {/* Permissions Settings */}
+          <Card className="p-4 sm:p-6 bg-card border-border">
+            <div className="flex items-center gap-3 mb-4">
+              <Bell className="w-5 h-5 text-primary" />
+              <h2 className="text-lg sm:text-xl font-semibold">Permissions</h2>
+            </div>
+            <Separator className="mb-4" />
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div className="space-y-0.5">
+                  <Label>Notifications</Label>
                   <p className="text-sm text-muted-foreground">Allow site notifications</p>
                 </div>
                 <Button 
@@ -551,10 +541,9 @@ const SettingsPage = () => {
                   {settings.notificationsEnabled ? 'Enabled' : 'Enable'}
                 </Button>
               </div>
-              <Separator />
-              <div className="flex items-center justify-between py-3">
+              <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
-                  <Label className="text-base">Popups</Label>
+                  <Label>Popups</Label>
                   <p className="text-sm text-muted-foreground">Allow opening new tabs/windows</p>
                 </div>
                 <Button 
@@ -562,13 +551,12 @@ const SettingsPage = () => {
                   size="sm"
                   onClick={handleTestPopups}
                 >
-                  Test
+                  Enable
                 </Button>
               </div>
-              <Separator />
-              <div className="flex items-center justify-between py-3">
+              <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
-                  <Label className="text-base">Clipboard</Label>
+                  <Label>Clipboard</Label>
                   <p className="text-sm text-muted-foreground">Allow copy and paste</p>
                 </div>
                 <Button 
@@ -581,53 +569,50 @@ const SettingsPage = () => {
                 </Button>
               </div>
             </div>
-          </div>
-        );
+          </Card>
 
-      case 'browser':
-        return (
-          <div className="space-y-6">
-            <div>
-              <h2 className="text-2xl font-semibold mb-2">Browser Settings</h2>
-              <p className="text-muted-foreground">Configure browser behavior</p>
+          {/* Browser Settings */}
+          <Card className="p-4 sm:p-6 bg-card border-border">
+            <div className="flex items-center gap-3 mb-4">
+              <Globe className="w-5 h-5 text-primary" />
+              <h2 className="text-lg sm:text-xl font-semibold">Browser Settings</h2>
             </div>
-            <Separator />
-            <div className="flex items-center justify-between py-3">
-              <div className="space-y-0.5">
-                <Label className="text-base">Incognito Mode</Label>
-                <p className="text-sm text-muted-foreground">Don't save history or cookies in the browser</p>
-              </div>
-              <Switch 
-                checked={settings.incognitoMode} 
-                onCheckedChange={(v) => handleChange('incognitoMode', v)} 
-              />
-            </div>
-          </div>
-        );
-
-      case 'performance':
-        return (
-          <div className="space-y-6">
-            <div>
-              <h2 className="text-2xl font-semibold mb-2">Performance</h2>
-              <p className="text-muted-foreground">Optimize performance settings</p>
-            </div>
-            <Separator />
-            <div className="space-y-6">
-              <div className="flex items-center justify-between py-3">
+            <Separator className="mb-4" />
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
-                  <Label className="text-base">Performance Mode</Label>
-                  <p className="text-sm text-muted-foreground">Disable animations for better performance on slower devices</p>
+                  <Label>Incognito Mode</Label>
+                  <p className="text-sm text-muted-foreground">Don't save history or cookies</p>
+                </div>
+                <Switch 
+                  checked={settings.incognitoMode} 
+                  onCheckedChange={(v) => handleChange('incognitoMode', v)} 
+                />
+              </div>
+            </div>
+          </Card>
+
+          {/* Performance Settings */}
+          <Card className="p-4 sm:p-6 bg-card border-border">
+            <div className="flex items-center gap-3 mb-4">
+              <Zap className="w-5 h-5 text-primary" />
+              <h2 className="text-lg sm:text-xl font-semibold">Performance</h2>
+            </div>
+            <Separator className="mb-4" />
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div className="space-y-0.5">
+                  <Label>Performance Mode</Label>
+                  <p className="text-sm text-muted-foreground">Disable animations for better performance</p>
                 </div>
                 <Switch 
                   checked={settings.performanceMode} 
                   onCheckedChange={(v) => handleChange('performanceMode', v)} 
                 />
               </div>
-              <Separator />
-              <div className="flex items-center justify-between py-3">
+              <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
-                  <Label className="text-base">Show FPS Counter</Label>
+                  <Label>Show FPS Counter</Label>
                   <p className="text-sm text-muted-foreground">Display frames per second in games</p>
                 </div>
                 <Switch 
@@ -636,116 +621,46 @@ const SettingsPage = () => {
                 />
               </div>
             </div>
-          </div>
-        );
+          </Card>
 
-      case 'cursor':
-        return (
-          <div className="space-y-6">
-            <div className="flex items-center gap-2">
-              <h2 className="text-2xl font-semibold">Custom Cursor</h2>
-              <span className="px-2.5 py-0.5 text-xs font-medium bg-primary/20 text-primary rounded-full">Experimental</span>
+          {/* Update Settings */}
+          <Card className="p-4 sm:p-6 bg-card border-border">
+            <div className="flex items-center gap-3 mb-4">
+              <Activity className="w-5 h-5 text-primary" />
+              <h2 className="text-lg sm:text-xl font-semibold">Updates</h2>
             </div>
-            <p className="text-muted-foreground">Customize your cursor appearance</p>
-            <Separator />
-            <div className="space-y-6">
-              <div className="flex items-center justify-between py-3">
+            <Separator className="mb-4" />
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
-                  <Label className="text-base">Enable Custom Cursor</Label>
-                  <p className="text-sm text-muted-foreground">Replace default cursor with custom design</p>
+                  <Label>Disable Update Popups</Label>
+                  <p className="text-sm text-muted-foreground">Don't show update notifications</p>
                 </div>
                 <Switch 
-                  checked={settings.customCursorEnabled || false} 
-                  onCheckedChange={(v) => handleChange('customCursorEnabled', v)} 
+                  checked={settings.disableUpdatePopups} 
+                  onCheckedChange={(v) => handleChange('disableUpdatePopups', v)} 
                 />
               </div>
-              
-              {settings.customCursorEnabled && (
-                <>
-                  <Separator />
-                  <div className="py-3 space-y-4">
-                    <div className="flex items-center justify-between">
-                      <Label className="text-base">Smoothness</Label>
-                      <span className="text-sm text-muted-foreground">
-                        {Math.round((settings.cursorSmoothness || 0.65) * 100)}%
-                      </span>
-                    </div>
-                    <Slider
-                      value={[(settings.cursorSmoothness || 0.65) * 100]}
-                      onValueChange={([v]) => handleChange('cursorSmoothness', v / 100)}
-                      min={10}
-                      max={100}
-                      step={5}
-                      className="w-full"
-                    />
-                    <p className="text-xs text-muted-foreground">Higher values make cursor follow faster</p>
-                  </div>
-                  <Separator />
-                  <div className="py-3 space-y-4">
-                    <div className="flex items-center justify-between">
-                      <Label className="text-base">Cursor Size</Label>
-                      <span className="text-sm text-muted-foreground">
-                        {settings.cursorSize || 36}px
-                      </span>
-                    </div>
-                    <Slider
-                      value={[settings.cursorSize || 36]}
-                      onValueChange={([v]) => handleChange('cursorSize', v)}
-                      min={24}
-                      max={64}
-                      step={4}
-                      className="w-full"
-                    />
-                    <p className="text-xs text-muted-foreground">Adjust the size of the cursor</p>
-                  </div>
-                </>
-              )}
             </div>
-          </div>
-        );
+          </Card>
 
-      case 'updates':
-        return (
-          <div className="space-y-6">
-            <div>
-              <h2 className="text-2xl font-semibold mb-2">Updates</h2>
-              <p className="text-muted-foreground">Configure update notifications</p>
+          {/* About:blank Settings */}
+          <Card className="p-4 sm:p-6 bg-card border-border">
+            <div className="flex items-center gap-3 mb-4">
+              <Globe className="w-5 h-5 text-primary" />
+              <h2 className="text-lg sm:text-xl font-semibold">About:blank</h2>
             </div>
-            <Separator />
-            <div className="flex items-center justify-between py-3">
-              <div className="space-y-0.5">
-                <Label className="text-base">Disable Update Popups</Label>
-                <p className="text-sm text-muted-foreground">Don't show update notifications when new versions are released</p>
-              </div>
-              <Switch 
-                checked={settings.disableUpdatePopups} 
-                onCheckedChange={(v) => handleChange('disableUpdatePopups', v)} 
-              />
-            </div>
-          </div>
-        );
-
-      case 'aboutblank':
-        return (
-          <div className="space-y-6">
-            <div>
-              <h2 className="text-2xl font-semibold mb-2">About:blank</h2>
-              <p className="text-muted-foreground">Customize the about:blank tab appearance</p>
-            </div>
-            <Separator />
-            <div className="space-y-6">
-              {/* Presets */}
+            <Separator className="mb-4" />
+            <div className="space-y-4">
+              {/* Presets Dropdown */}
               {presets.length > 0 && (
-                <div className="py-3">
-                  <div className="space-y-0.5 mb-3">
-                    <Label className="text-base">Presets</Label>
-                    <p className="text-sm text-muted-foreground">Quick apply a preset configuration</p>
-                  </div>
+                <div className="space-y-2">
+                  <Label>Presets</Label>
                   <Select 
                     onValueChange={handlePresetSelect}
                     disabled={loadingPresets}
                   >
-                    <SelectTrigger className="w-full max-w-xs">
+                    <SelectTrigger>
                       <SelectValue placeholder="Choose a preset..." />
                     </SelectTrigger>
                     <SelectContent className="max-h-60 overflow-y-auto bg-popover">
@@ -766,19 +681,15 @@ const SettingsPage = () => {
                   </Select>
                 </div>
               )}
-              <Separator />
-              {/* Favicon */}
-              <div className="py-3">
-                <div className="space-y-0.5 mb-3">
-                  <Label className="text-base">Favicon</Label>
-                  <p className="text-sm text-muted-foreground">Custom favicon URL for the tab</p>
-                </div>
+              
+              <div className="space-y-2">
+                <Label>Favicon</Label>
                 <div className="flex gap-2">
                   <Input
                     value={settings.aboutBlankFavicon || ''}
                     onChange={(e) => setSettings(prev => ({ ...prev, aboutBlankFavicon: e.target.value }))}
                     placeholder="Enter favicon URL..."
-                    className="flex-1 max-w-md"
+                    className="flex-1"
                   />
                   <Button 
                     variant="outline"
@@ -792,19 +703,14 @@ const SettingsPage = () => {
                   </Button>
                 </div>
               </div>
-              <Separator />
-              {/* Tab Name */}
-              <div className="py-3">
-                <div className="space-y-0.5 mb-3">
-                  <Label className="text-base">Tab Name</Label>
-                  <p className="text-sm text-muted-foreground">Custom name displayed in the browser tab</p>
-                </div>
+              <div className="space-y-2">
+                <Label>Tab Name</Label>
                 <div className="flex gap-2">
                   <Input
                     value={settings.aboutBlankTabName || ''}
                     onChange={(e) => setSettings(prev => ({ ...prev, aboutBlankTabName: e.target.value }))}
                     placeholder="Enter tab name..."
-                    className="flex-1 max-w-md"
+                    className="flex-1"
                   />
                   <Button 
                     variant="outline"
@@ -819,90 +725,11 @@ const SettingsPage = () => {
                 </div>
               </div>
             </div>
-          </div>
-        );
+          </Card>
 
-      default:
-        return null;
-    }
-  };
-
-  return (
-    <div className="min-h-screen bg-background relative">
-      <GridBackground />
-      <Navigation />
-      <GlobalChat />
-
-      <main className="pt-24 px-4 sm:px-6 pb-12 relative z-10">
-        <div className="max-w-6xl mx-auto">
-          {fromBrowser && (
-            <div className="mb-8 p-8 bg-card border border-border rounded-lg text-center animate-fade-in">
-              <h2 className="text-2xl font-bold mb-2">🚧 Under Construction</h2>
-              <p className="text-muted-foreground">Browser-specific settings are coming soon!</p>
-            </div>
-          )}
-          
-          {/* Header */}
-          <div className="mb-8 animate-fade-in">
-            <div className="flex items-center gap-3 mb-2">
-              <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
-                <Settings className="w-5 h-5 text-primary" />
-              </div>
-              <h1 className="text-3xl font-bold text-foreground">Settings</h1>
-            </div>
-            <p className="text-muted-foreground">Manage your preferences and account</p>
-          </div>
-
-          {/* Main Layout */}
-          <div className="flex flex-col lg:flex-row gap-6">
-            {/* Sidebar */}
-            <div className="lg:w-64 flex-shrink-0">
-              <Card className="sticky top-24 p-4 bg-card border-border">
-                {/* Search */}
-                <div className="relative mb-4">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                  <Input
-                    placeholder="Filter settings..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-9 bg-muted border-border"
-                  />
-                </div>
-                
-                {/* Navigation */}
-                <nav className="space-y-1">
-                  {filteredSections.map((section) => (
-                    <button
-                      key={section.id}
-                      onClick={() => setActiveSection(section.id)}
-                      className={cn(
-                        "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-left transition-colors",
-                        activeSection === section.id
-                          ? "bg-primary text-primary-foreground"
-                          : "text-muted-foreground hover:bg-muted hover:text-foreground"
-                      )}
-                    >
-                      {section.icon}
-                      <span className="text-sm font-medium">{section.label}</span>
-                    </button>
-                  ))}
-                </nav>
-
-                {/* Reset Button */}
-                <div className="pt-4 mt-4 border-t border-border">
-                  <Button variant="outline" size="sm" onClick={handleResetDefaults} className="w-full">
-                    Reset to Defaults
-                  </Button>
-                </div>
-              </Card>
-            </div>
-
-            {/* Content */}
-            <div className="flex-1 min-w-0">
-              <Card className="p-6 sm:p-8 bg-card border-border">
-                {renderContent()}
-              </Card>
-            </div>
+          {/* Reset Button */}
+          <div className="flex justify-end">
+            <Button variant="outline" onClick={handleResetDefaults}>Reset to Defaults</Button>
           </div>
         </div>
       </main>

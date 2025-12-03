@@ -3,7 +3,7 @@ import { Card } from "@/components/ui/card";
 import { usePageTitle } from "@/hooks/use-page-title";
 import { Users, Github } from "lucide-react";
 import { GlobalChat } from "@/components/GlobalChat";
-import { GridBackground } from "@/components/GridBackground";
+import { StarBackground } from "@/components/StarBackground";
 import { Button } from "@/components/ui/button";
 
 const contributors = [
@@ -21,11 +21,6 @@ const contributors = [
     name: "Gn Math",
     image: "/images/gn-math.png",
     github: "https://github.com/gn-math"
-  },
-  {
-    name: "Maddox Schmidlkofer",
-    image: "/images/MaddoxSchmidlkofer.jpg",
-    github: "https://github.com/maddox05"
   }
 ];
 
@@ -33,7 +28,7 @@ const Credits = () => {
   usePageTitle('Credits');
   return (
     <div className="min-h-screen bg-background relative">
-      <GridBackground />
+      <StarBackground />
       <Navigation />
       <GlobalChat />
 

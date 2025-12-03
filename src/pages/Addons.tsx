@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { ArrowLeft, Download, Check, Loader2, Plus } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
@@ -8,7 +7,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { usePageTitle } from '@/hooks/use-page-title';
 import { toast } from 'sonner';
-import { GridBackground } from '@/components/GridBackground';
+import { StarBackground } from '@/components/StarBackground';
 
 type Addon = {
   id: string;
@@ -31,7 +30,6 @@ type AddonsData = {
 
 const Addons = () => {
   usePageTitle('Add-Ons');
-  const navigate = useNavigate();
   const [addonsData, setAddonsData] = useState<AddonsData | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [installedAddons, setInstalledAddons] = useState<string[]>([]);
@@ -165,7 +163,7 @@ const Addons = () => {
 
   return (
     <div className="min-h-screen bg-background relative">
-      <GridBackground />
+      <StarBackground />
       
       {/* Header */}
       <header className="sticky top-0 z-50 bg-background/95 backdrop-blur border-b border-border">
@@ -174,7 +172,7 @@ const Addons = () => {
             <Button 
               variant="ghost" 
               size="icon" 
-              onClick={() => navigate(-1)}
+              onClick={() => window.history.back()}
             >
               <ArrowLeft className="w-5 h-5" />
             </Button>

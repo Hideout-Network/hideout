@@ -2,75 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Animated glowing border line that travels around search bar like a loading indicator */
-@keyframes border-rotate {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
-}
-
-.search-border-glow {
-  position: absolute;
-  inset: -2px;
-  border-radius: 1rem;
-  overflow: hidden;
-}
-
-.search-border-glow::before {
-  content: '';
-  position: absolute;
-  inset: -50%;
-  background: conic-gradient(
-    from 0deg,
-    transparent 0deg,
-    transparent 60deg,
-    hsl(var(--primary)) 120deg,
-    hsl(var(--primary) / 0.8) 180deg,
-    transparent 240deg,
-    transparent 360deg
-  );
-  animation: border-rotate 4s linear infinite;
-}
-
-.search-border-glow::after {
-  content: '';
-  position: absolute;
-  inset: 2px;
-  background: hsl(var(--card));
-  border-radius: calc(1rem - 2px);
-}
-
-/* Fullscreen iframe styles */
-iframe:fullscreen {
-  width: 100vw !important;
-  height: 100vh !important;
-  object-fit: contain;
-}
-
-iframe:-webkit-full-screen {
-  width: 100vw !important;
-  height: 100vh !important;
-  object-fit: contain;
-}
-
-iframe:-moz-full-screen {
-  width: 100vw !important;
-  height: 100vh !important;
-  object-fit: contain;
-}
-
 /* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
 All colors MUST be HSL.
 */
 
 @layer base {
-  html {
-    scroll-behavior: smooth;
-  }
-  
   :root {
     --background: 0 0% 4%;
     --foreground: 0 0% 98%;

@@ -1,37 +1,5 @@
 [
   {
-    "updateNumber": 5,
-    "version": "v1.1.0",
-    "updateDate": "2025-11-29",
-    "githubLink": "https://github.com/Hideout-Network/hideout/releases/tag/v1.1.0",
-    "changes": [
-      "🌟 Updated background from stars to a grid background.",
-      "🎄 New Christmas theme! (Default)",
-      "🤖 New AI page!",
-      "🖱️ New custom cursor feature! (Experimental)",
-      "🎮 Updated the games layout to look like Poki!",
-      "📋 You can now switch between game lists by clicking the lists button to the right of the search bar in games.",
-      "📱 Updated apps page to look better.",
-      "🍔 New menu button at the bottom right of every page.",
-      "💬 Global chat button now shows on every page at the bottom left.",
-      "🗂️ Removed categories in apps.",
-      "🔗 Added site shortcuts for the proxy below the search bar on the home page.",
-      "🏠 Updated homepage layout.",
-      "🎯 Added game recommendation panels to the right and left of the game iframe when you play a game.",
-      "🐛 Fixed lots of bugs!",
-      "✨ And more!"
-    ]
-  },
-  {
-    "updateNumber": 4,
-    "version": "v1.0.0",
-    "updateDate": "2025-11-24",
-    "githubLink": "https://github.com/Hideout-Network/hideout/releases/tag/v1.0.0",
-    "changes": [
-      "🚀 v1.0.0 Release!"
-    ]
-  },
-  {
     "updateNumber": 3,
     "version": "v0.5.0 Alpha",
     "updateDate": "2025-11-10",

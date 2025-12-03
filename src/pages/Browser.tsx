@@ -11,7 +11,7 @@ import { BrowserHistory } from "@/components/browser/BrowserHistory";
 import { supabase } from "@/integrations/supabase/client";
 import { GlobalChat } from "@/components/GlobalChat";
 import { usePageTitle } from "@/hooks/use-page-title";
-import { GridBackground } from "@/components/GridBackground";
+import { StarBackground } from "@/components/StarBackground";
 import eruda from "eruda";
 
 // Browser configuration
@@ -32,17 +32,6 @@ const Browser = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const initialUrl = (location.state as { initialUrl?: string })?.initialUrl;
-  
-  // Show maintenance screen
-  return (
-    <div className="min-h-screen bg-black flex flex-col items-center justify-center">
-      <h1 className="text-3xl font-bold text-white mb-4">Browser Under Maintenance</h1>
-      <p className="text-muted-foreground mb-8">We're working on improvements. Check back soon!</p>
-      <Button onClick={() => navigate('/')} variant="outline">
-        Go Back
-      </Button>
-    </div>
-  );
   
   const [tabs, setTabs] = useState<Tab[]>(() => {
     // Check if incognito mode is enabled
@@ -139,7 +128,7 @@ const Browser = () => {
   const [zoom, setZoom] = useState(1);
   const [closedTabs, setClosedTabs] = useState<Tab[]>([]);
   const [showDevTools, setShowDevTools] = useState(false);
-  
+  const [showPopupDialog, setShowPopupDialog] = useState(false);
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const erudaContainerRef = useRef<HTMLDivElement>(null);
   const nextTabId = useRef(2);
@@ -186,6 +175,27 @@ const Browser = () => {
     };
   }, []);
 
+  // Check popup permissions on mount
+  useEffect(() => {
+    const checkPopupPermissions = () => {
+      try {
+        const testWindow = window.open('', '', 'width=1,height=1');
+        if (testWindow) {
+          testWindow.close();
+        } else {
+          // Popups are blocked
+          setShowPopupDialog(true);
+        }
+      } catch (error) {
+        // Error opening popup, likely blocked
+        setShowPopupDialog(true);
+      }
+    };
+
+    // Check after a short delay to avoid interfering with page load
+    const timer = setTimeout(checkPopupPermissions, 1000);
+    return () => clearTimeout(timer);
+  }, []);
 
   // Sync browser data to Supabase if user is logged in
   const syncToSupabase = useCallback(async () => {
@@ -842,7 +852,7 @@ const Browser = () => {
   
   return (
     <div className="h-screen flex flex-col bg-background relative">
-      
+      <StarBackground />
       <h1 className="sr-only">Web Pr0xy Browser</h1>
       
       {/* Tab bar with close button */}
@@ -985,6 +995,19 @@ const Browser = () => {
         </AlertDialogContent>
       </AlertDialog>
 
+      <AlertDialog open={showPopupDialog} onOpenChange={setShowPopupDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Allow Popups</AlertDialogTitle>
+            <AlertDialogDescription>
+              This browser requires popup permissions to function properly. Please allow popups for this site in your browser settings.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogAction onClick={() => setShowPopupDialog(false)}>OK</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       <GlobalChat />
       

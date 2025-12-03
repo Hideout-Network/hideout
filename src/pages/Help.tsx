@@ -7,15 +7,15 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { HelpCircle, Mail, MessageCircle, Globe, Shield, Zap, Gamepad2, Bot, Palette, Keyboard } from "lucide-react";
+import { HelpCircle, Mail, MessageCircle, BookOpen, Globe, Shield, Zap } from "lucide-react";
 import { GlobalChat } from "@/components/GlobalChat";
-import { GridBackground } from "@/components/GridBackground";
+import { StarBackground } from "@/components/StarBackground";
 
 const Help = () => {
   usePageTitle('Help');
   return (
     <div className="min-h-screen bg-background relative">
-      <GridBackground />
+      <StarBackground />
       <Navigation />
       <GlobalChat />
 
@@ -27,7 +27,7 @@ const Help = () => {
           </div>
           <h1 className="text-4xl font-bold text-foreground">Help Center</h1>
           <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-            Find answers to common questions and get support for Hideout.
+            Find answers to common questions and get support.
           </p>
         </div>
 
@@ -36,15 +36,15 @@ const Help = () => {
           <a href="https://discord.gg/HkbVraQH89" target="_blank" rel="noopener noreferrer">
             <Card className="p-6 bg-card border-border hover:border-primary/20 transition-all cursor-pointer group">
               <MessageCircle className="w-8 h-8 text-primary mb-3 group-hover:scale-110 transition-transform" />
-              <h3 className="font-semibold mb-2">Discord Community</h3>
-              <p className="text-sm text-muted-foreground">Join our Discord for live support and updates</p>
+              <h3 className="font-semibold mb-2">Community</h3>
+              <p className="text-sm text-muted-foreground">Join our Discord community</p>
             </Card>
           </a>
           <a href="https://github.com/Hideout-Network/hideout/issues/new" target="_blank" rel="noopener noreferrer">
             <Card className="p-6 bg-card border-border hover:border-primary/20 transition-all cursor-pointer group">
               <Mail className="w-8 h-8 text-primary mb-3 group-hover:scale-110 transition-transform" />
               <h3 className="font-semibold mb-2">Report Issue</h3>
-              <p className="text-sm text-muted-foreground">Submit bug reports or feature requests</p>
+              <p className="text-sm text-muted-foreground">Submit feedback or report bugs</p>
             </Card>
           </a>
         </div>
@@ -52,34 +52,19 @@ const Help = () => {
         {/* Features Section */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-12">
           <Card className="p-6 bg-card border-border">
-            <Gamepad2 className="w-8 h-8 text-primary mb-3" />
-            <h3 className="font-semibold mb-2">Games</h3>
-            <p className="text-sm text-muted-foreground">Browse and play games from multiple sources. Favorite games for quick access. Use "Feeling Lucky" for random picks!</p>
-          </Card>
-          <Card className="p-6 bg-card border-border">
             <Globe className="w-8 h-8 text-primary mb-3" />
             <h3 className="font-semibold mb-2">Browser</h3>
-            <p className="text-sm text-muted-foreground">Access websites through our built-in browser with tab support. Navigate freely with keyboard shortcuts.</p>
-          </Card>
-          <Card className="p-6 bg-card border-border">
-            <Bot className="w-8 h-8 text-primary mb-3" />
-            <h3 className="font-semibold mb-2">AI Chat</h3>
-            <p className="text-sm text-muted-foreground">Chat with AI models. Auto mode selects the best model for your needs. Supports image uploads!</p>
+            <p className="text-sm text-muted-foreground">Access any website with our secure pr0xy browser. Up to 5 tabs supported!</p>
           </Card>
           <Card className="p-6 bg-card border-border">
             <Zap className="w-8 h-8 text-primary mb-3" />
-            <h3 className="font-semibold mb-2">Apps</h3>
-            <p className="text-sm text-muted-foreground">Access useful web apps and tools directly. Quick search to find what you need.</p>
-          </Card>
-          <Card className="p-6 bg-card border-border">
-            <Palette className="w-8 h-8 text-primary mb-3" />
-            <h3 className="font-semibold mb-2">Themes & Addons</h3>
-            <p className="text-sm text-muted-foreground">Customize Hideout with themes and addons. Visit Settings to change themes.</p>
+            <h3 className="font-semibold mb-2">Games & Apps</h3>
+            <p className="text-sm text-muted-foreground">Play unbl0cked games and use apps directly in your browser.</p>
           </Card>
           <Card className="p-6 bg-card border-border">
             <Shield className="w-8 h-8 text-primary mb-3" />
-            <h3 className="font-semibold mb-2">Privacy</h3>
-            <p className="text-sm text-muted-foreground">Your privacy matters. We don't track you. Use incognito mode for extra privacy.</p>
+            <h3 className="font-semibold mb-2">Privacy First</h3>
+            <p className="text-sm text-muted-foreground">We value your privacy and security. No tracking, no data collection.</p>
           </Card>
         </div>
 
@@ -88,66 +73,49 @@ const Help = () => {
           <h2 className="text-2xl font-bold mb-6">Frequently Asked Questions</h2>
           <Accordion type="single" collapsible className="w-full">
             <AccordionItem value="item-1">
-              <AccordionTrigger>How do I play games?</AccordionTrigger>
+              <AccordionTrigger>How do I access blocked games?</AccordionTrigger>
               <AccordionContent>
-                Navigate to the Games page from the navigation bar. Browse through games from multiple sources or use the search bar to find specific games. Click on any game to play it. You can favorite games by clicking the heart icon for quick access later.
+                Simply navigate to the Games section and click on any game to start playing. 
+                All games are accessible without restrictions.
               </AccordionContent>
             </AccordionItem>
             <AccordionItem value="item-2">
-              <AccordionTrigger>What is the AI feature?</AccordionTrigger>
+              <AccordionTrigger>Is Hideout safe to use?</AccordionTrigger>
               <AccordionContent>
-                The AI button in the navigation opens a chat interface where you can talk to various AI models. By default, "Auto" mode is selected which automatically picks the best model based on your message - vision models for images, powerful models for complex prompts. You need to add a Groq API key (free at console.groq.com) to use this feature.
+                Yes, Hideout is completely safe. We don't collect any personal information 
+                and all connections are secure.
               </AccordionContent>
             </AccordionItem>
             <AccordionItem value="item-3">
-              <AccordionTrigger>How do I use the browser?</AccordionTrigger>
+              <AccordionTrigger>Can I use this on my school computer?</AccordionTrigger>
               <AccordionContent>
-                Click "Browser" in the navigation to access the built-in browser. You can type URLs or search queries in the address bar. The browser supports multiple tabs (up to 5) and has keyboard shortcuts for quick navigation.
+                Hideout is designed to work on most school networks, but availability may 
+                depend on your school's specific restrictions and policies.
               </AccordionContent>
             </AccordionItem>
             <AccordionItem value="item-4">
-              <AccordionTrigger>How do I add shortcuts on the home page?</AccordionTrigger>
+              <AccordionTrigger>How does the browser feature work?</AccordionTrigger>
               <AccordionContent>
-                On the home page, you'll see shortcut tiles below the search bar. Click the "+" button to add a new shortcut with a custom name and URL. Hover over any shortcut and click the X to remove it. Shortcuts are saved and persist across sessions.
+                The browser feature allows you to access websites through a pr0xy, 
+                helping you bypass network restrictions while maintaining privacy. You can open up to 5 tabs and navigate just like a regular browser!
               </AccordionContent>
             </AccordionItem>
             <AccordionItem value="item-5">
-              <AccordionTrigger>Why are there duplicate games?</AccordionTrigger>
+              <AccordionTrigger>How do I use the global chat?</AccordionTrigger>
               <AccordionContent>
-                Games come from multiple sources (List 1, List 2, List 3), so some games may appear more than once. When you click a game, it will correctly open the specific version you clicked on, not a random duplicate.
+                Click the chat button in the bottom left corner to open global chat. All features are available to everyone. Chat history is limited to the last 100 messages to ensure optimal performance.
               </AccordionContent>
             </AccordionItem>
             <AccordionItem value="item-6">
-              <AccordionTrigger>How do I change themes?</AccordionTrigger>
+              <AccordionTrigger>Can I request games or report bugs?</AccordionTrigger>
               <AccordionContent>
-                Go to Settings (click Settings in the navigation) and look for the Appearance section. You can select from various themes in the dropdown menu. Theme changes apply immediately.
+                Yes! On the Games page, you'll find a "Request Game" button. On the home page, there's a "Report Bug" button below the search bar. Both will help you send feedback to our team.
               </AccordionContent>
             </AccordionItem>
             <AccordionItem value="item-7">
-              <AccordionTrigger>How do I report bugs or request games?</AccordionTrigger>
-              <AccordionContent>
-                Click the menu icon (three lines) at the bottom-right corner of any page. You'll find options to Report Bug, Request Game, visit our GitHub, Discord, and Help page.
-              </AccordionContent>
-            </AccordionItem>
-            <AccordionItem value="item-8">
               <AccordionTrigger>What keyboard shortcuts are available?</AccordionTrigger>
               <AccordionContent>
-                <div className="flex items-start gap-2">
-                  <Keyboard className="w-4 h-4 mt-1 text-muted-foreground" />
-                  <div>
-                    <p className="mb-2">In the browser, press Alt+Z first, then:</p>
-                    <ul className="list-disc list-inside space-y-1 text-sm">
-                      <li>T - New tab</li>
-                      <li>W - Close current tab</li>
-                      <li>R - Reload page</li>
-                      <li>L - Focus address bar</li>
-                      <li>← - Go back</li>
-                      <li>→ - Go forward</li>
-                      <li>F - Toggle fullscreen</li>
-                      <li>I - Open dev tools</li>
-                    </ul>
-                  </div>
-                </div>
+                In the browser, press Alt+Z first, then: T (new tab), W (close tab), R (reload), L (focus address bar), ← (back), → (forward), F (fullscreen), I (dev tools).
               </AccordionContent>
             </AccordionItem>
           </Accordion>
@@ -156,11 +124,11 @@ const Help = () => {
         {/* Browser Help Card */}
         <Card className="p-8 bg-card border-border">
           <div className="flex items-center gap-3 mb-4">
-            <Globe className="w-6 h-6 text-primary" />
-            <h2 className="text-2xl font-bold">Browser Documentation</h2>
+            <BookOpen className="w-6 h-6 text-primary" />
+            <h2 className="text-2xl font-bold">Browser</h2>
           </div>
           <p className="text-muted-foreground mb-4">
-            For detailed browser documentation and advanced help, visit the built-in help page:
+            For detailed browser documentation and help, visit:
           </p>
           
           <a 

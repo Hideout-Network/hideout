@@ -2,276 +2,322 @@
   {
     "name": "YouTube",
     "icon": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/62/YouTube_social_white_square_%282024%29.svg/2048px-YouTube_social_white_square_%282024%29.svg.png",
+    "category": "Video",
     "description": "Watch and share videos",
     "link": "https://youtube.com"
   },
   {
     "name": "Spotify",
     "icon": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/84/Spotify_icon.svg/512px-Spotify_icon.svg.png",
+    "category": "Music",
     "description": "Stream music and podcasts",
     "link": "https://spotify.com"
   },
   {
     "name": "Discord",
     "icon": "https://images-eds-ssl.xboxlive.com/image?url=4rt9.lXDC4H_93laV1_eHHFT949fUipzkiFOBH3fAiZZUCdYojwUyX2aTonS1aIwMrx6NUIsHfUHSLzjGJFxxsG72wAo9EWJR4yQWyJJaDaK1XdUso6cUMpI9hAdPUU_FNs11cY1X284vsHrnWtRw7oqRpN1m9YAg21d_aNKnIo-&format=source&h=210",
+    "category": "Chat",
     "description": "Voice, video, and text chat",
     "link": "https://discord.com"
   },
   {
     "name": "ChatGPT",
     "icon": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRTynxqlGSQMv1aXUCh4tTkXy0twfpzDkku6A&s",
+    "category": "AI",
     "description": "AI chatbot assistant",
     "link": "https://chat.openai.com"
   },
   {
     "name": "Gmail",
     "icon": "https://static.vecteezy.com/system/resources/previews/013/948/544/non_2x/gmail-logo-on-transparent-white-background-free-vector.jpg",
+    "category": "Productivity",
     "description": "Email service by Google",
     "link": "https://gmail.com"
   },
   {
     "name": "Netflix",
     "icon": "https://yt3.googleusercontent.com/CvgBA1ypUZNxOjiCX0l1V2FbAm7oSDPZE4YkMvkpT_4iLXQ3IXWVtBgWnznHxgtcUoj50TXqZA=s900-c-k-c0x00ffffff-no-rj",
+    "category": "Video",
     "description": "Stream movies and TV shows",
     "link": "https://netflix.com"
   },
   {
     "name": "Twitch",
     "icon": "https://m.media-amazon.com/images/I/21kRx-CJsUL._h1_.png",
+    "category": "Video",
     "description": "Live streaming platform",
     "link": "https://twitch.tv"
   },
   {
     "name": "Reddit",
     "icon": "https://store-images.s-microsoft.com/image/apps.15970.14375561300249796.05fe8c27-ce9e-4144-8702-0e81e2f575b1.042364cb-b745-4796-a520-61291e2dd6b9",
+    "category": "Social",
     "description": "Social news and discussion",
     "link": "https://reddit.com"
   },
   {
     "name": "Twitter",
     "icon": "https://store-images.s-microsoft.com/image/apps.60673.9007199266244427.4d45042b-d7a5-4a83-be66-97779553b24d.5d82b7eb-9734-4b51-b65d-a0383348ab1b?h=210",
+    "category": "Social",
     "description": "Social media platform",
     "link": "https://twitter.com"
   },
   {
     "name": "Instagram",
     "icon": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT3Sxu0lyuJ6iB2d0nYI1-GIKP2VPUPQ4KQvA&s",
+    "category": "Social",
     "description": "Photo and video sharing",
     "link": "https://instagram.com"
   },
   {
     "name": "TikTok",
     "icon": "https://sf-static.tiktokcdn.com/obj/eden-sg/uhtyvueh7nulogpoguhm/tiktok-icon2.png",
+    "category": "Social",
     "description": "Short-form video platform",
     "link": "https://tiktok.com"
   },
   {
     "name": "Snapchat",
     "icon": "https://is1-ssl.mzstatic.com/image/thumb/PurpleSource221/v4/1b/26/d7/1b26d773-d3a9-1d2d-da5e-eac6b136ab4c/AppleWatch_Splash.png/300x0w.jpg",
+    "category": "Social",
     "description": "Messaging and stories",
     "link": "https://snapchat.com"
   },
   {
     "name": "Facebook",
     "icon": "https://store-images.s-microsoft.com/image/apps.37935.9007199266245907.b029bd80-381a-4869-854f-bac6f359c5c9.91f8693c-c75b-4050-a796-63e1314d18c9?h=210",
+    "category": "Social",
     "description": "Social networking site",
     "link": "https://facebook.com"
   },
   {
     "name": "WhatsApp",
     "icon": "https://store-images.s-microsoft.com/image/apps.8453.13655054093851568.4a371b72-2ce8-4bdb-9d83-be49894d3fa0.7f3687b9-847d-4f86-bb5c-c73259e2b38e",
+    "category": "Chat",
     "description": "Messaging app",
     "link": "https://web.whatsapp.com"
   },
   {
     "name": "Telegram",
     "icon": "https://store-images.s-microsoft.com/image/apps.55245.13537716651231321.3067a421-6c2f-48a9-b77c-1e38e19146e6.10e2aa49-52ca-4e79-9a61-b6422978afb9?h=210",
+    "category": "Chat",
     "description": "Cloud-based messaging",
     "link": "https://web.telegram.org"
   },
   {
     "name": "Slack",
     "icon": "https://avatars.githubusercontent.com/u/6911160?s=280&v=4",
+    "category": "Chat",
     "description": "Team communication platform",
     "link": "https://slack.com"
   },
   {
     "name": "Dropbox",
     "icon": "https://play-lh.googleusercontent.com/b1-MIBjlMD9kvl0Okeglm9BL9ejRpOXMio303W0tiLb8Ul5WuVzBDoDKgGRcALOsCdw=w240-h480-rw",
+    "category": "Productivity",
     "description": "File hosting service",
     "link": "https://dropbox.com"
   },
   {
     "name": "OneDrive",
     "icon": "https://cdn-1.webcatalog.io/catalog/microsoft-onedrive/microsoft-onedrive-icon-filled-256.png?v=1757896988892",
+    "category": "Productivity",
     "description": "Microsoft cloud storage",
     "link": "https://onedrive.live.com"
   },
   {
     "name": "Notion",
     "icon": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT_YWUotEbuX7-L0y0FRaU_ZJPL62KaeyRRvKjOvKryeBf27qrDAeiHC2O0NERiygcUsrE&usqp=CAU",
+    "category": "Productivity",
     "description": "Notes and collaboration",
     "link": "https://notion.so"
   },
   {
     "name": "GitHub",
     "icon": "https://cdn-1.webcatalog.io/catalog/github/github-icon-filled-256.png?v=1756687729671",
+    "category": "Development",
     "description": "Code hosting platform",
     "link": "https://github.com"
   },
   {
     "name": "Stack Overflow",
     "icon": "https://pbs.twimg.com/profile_images/1220067947798024192/30eZhfxx_400x400.png",
+    "category": "Development",
     "description": "Q&A for programmers",
     "link": "https://stackoverflow.com"
   },
   {
     "name": "CodePen",
     "icon": "https://media.licdn.com/dms/image/v2/C560BAQGKtd1slGeUMA/company-logo_200_200/company-logo_200_200/0/1630571543819/codepen_logo?e=2147483647&v=beta&t=0_wc-rXCGN9XLQt3V5jn-DmWQt6PYI-W-TLtoO4gWZM",
+    "category": "Development",
     "description": "Online code editor",
     "link": "https://codepen.io"
   },
   {
     "name": "Replit",
     "icon": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSr0nbYZD5RAxcUupTf6_4tjmcuPbR_MuuB_w&s",
+    "category": "Development",
     "description": "Online IDE",
     "link": "https://replit.com"
   },
   {
     "name": "Coursera",
     "icon": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/97/Coursera-Logo_600x600.svg/512px-Coursera-Logo_600x600.svg.png",
+    "category": "Education",
     "description": "Online learning platform",
     "link": "https://coursera.org"
   },
   {
     "name": "SoundCloud",
     "icon": "https://i1.sndcdn.com/avatars-wQ2we7uDPoXzUVzW-qdr1Yg-t240x240.jpg",
+    "category": "Music",
     "description": "Music streaming service",
     "link": "https://soundcloud.com"
   },
   {
     "name": "Apple Music",
     "icon": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ-tVbKhy2iOODJu6sLFpbi0iUvedtqXh29Hw&s",
+    "category": "Music",
     "description": "Music streaming by Apple",
     "link": "https://music.apple.com"
   },
   {
     "name": "Amazon Music",
     "icon": "https://yt3.googleusercontent.com/vXVNL_IU8NxwsJ4GpdX3yJW2R5nwVhJoYBXz96VpGsiaBWtOwj59IL4S5O3YuoQQAMArOpizpg=s900-c-k-c0x00ffffff-no-rj",
+    "category": "Music",
     "description": "Music streaming by Amazon",
     "link": "https://music.amazon.com"
   },
   {
     "name": "Hulu",
     "icon": "https://play-lh.googleusercontent.com/lH3MWp-oZRi39j_XcWqKOtnv7fyLNmH35agp_pR-TdjQLkuEP77HK5_yI9KwKIKI4U01",
+    "category": "Video",
     "description": "Streaming TV and movies",
     "link": "https://hulu.com"
   },
   {
     "name": "Disney+",
     "icon": "https://m.media-amazon.com/images/I/719t3jd2NeL.png",
+    "category": "Video",
     "description": "Disney streaming service",
     "link": "https://disneyplus.com"
   },
   {
     "name": "Prime Video",
     "icon": "https://m.media-amazon.com/images/I/31W9hs7w0JL.png",
+    "category": "Video",
     "description": "Amazon streaming service",
     "link": "https://primevideo.com"
   },
   {
     "name": "Steam",
     "icon": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRGvuKJiVA1-WtJ81X8FDVFIsBQXGWzzxqzuA&s",
+    "category": "Gaming",
     "description": "Gaming platform",
     "link": "https://store.steampowered.com"
   },
   {
     "name": "Epic Games",
     "icon": "https://images-eds-ssl.xboxlive.com/image?url=4rt9.lXDC4H_93laV1_eHM0OYfiFeMI2p9MWie0CvL99U4GA1gf6_kayTt_kBblFwHwo8BW8JXlqfnYxKPmmBaCZi8ClpwbXOgA6G7dvea_zrF.gU8crDBsE8CEYlpitDvfcjjOeAcKJZ5sLQBUCmB414kSXwCeJ3MpVrNXR.x0-&format=source",
+    "category": "Gaming",
     "description": "Game store and launcher",
     "link": "https://epicgames.com"
   },
   {
     "name": "Xbox",
     "icon": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ8bqcn8xTGlSw5XjXm8-LKRnIfIa_uW2TCjA&s",
+    "category": "Gaming",
     "description": "Xbox gaming platform",
     "link": "https://xbox.com"
   },
   {
     "name": "PlayStation",
     "icon": "https://upload.wikimedia.org/wikipedia/commons/9/91/PlayStation_App_Icon.jpg",
+    "category": "Gaming",
     "description": "PlayStation gaming platform",
     "link": "https://playstation.com"
   },
   {
     "name": "Nintendo",
     "icon": "https://media.licdn.com/dms/image/v2/C510BAQGpMrVyXTAJAQ/company-logo_200_200/company-logo_200_200/0/1631310437397?e=2147483647&v=beta&t=-jfuIp5nIdsiQRxeiVgd20M--3jN3nGZXY4rXmNIeWQ",
+    "category": "Gaming",
     "description": "Nintendo gaming platform",
     "link": "https://nintendo.com"
   },
   {
     "name": "Amazon",
     "icon": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT_acIokFYk2PyFtljx2fBacLx22Pv2Lz-fhw&s",
+    "category": "Shopping",
     "description": "Online shopping",
     "link": "https://amazon.com"
   },
   {
     "name": "eBay",
     "icon": "https://yt3.googleusercontent.com/ytc/AIdro_lfmny2grDyscetfprmiXcbsdU1ce4hlBRACj2g3lsX29ZM=s900-c-k-c0x00ffffff-no-rj",
+    "category": "Shopping",
     "description": "Online marketplace",
     "link": "https://ebay.com"
   },
   {
     "name": "Etsy",
     "icon": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/64/Etsy_icon.svg/2048px-Etsy_icon.svg.png",
+    "category": "Shopping",
     "description": "Handmade and vintage items",
     "link": "https://etsy.com"
   },
   {
     "name": "PayPal",
     "icon": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS7ZzAQ7_RJvImwYqhZjYg30S6Yms4APoMPpA&s",
+    "category": "Finance",
     "description": "Online payment system",
     "link": "https://paypal.com"
   },
   {
     "name": "Venmo",
     "icon": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR8RLAt5LldJJ7Q49uJZCAO7N4SnwpG0V3k-Q&s",
+    "category": "Finance",
     "description": "Mobile payment service",
     "link": "https://venmo.com"
   },
   {
     "name": "Cash App",
     "icon": "https://play-lh.googleusercontent.com/s7I0yvyhwfecAh8wm8HvaPekT9197kfPQQKPvQ1QTkt2M-mmPaeqrdVUqoOiG6mv9r4=w240-h480-rw",
+    "category": "Finance",
     "description": "Mobile payment app",
     "link": "https://cash.app"
   },
   {
     "name": "Pinterest",
     "icon": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRWQmKvZzM7NeNuWl3SCSdzWEeBjt9yzUiPlg&s",
+    "category": "Social",
     "description": "Visual discovery platform",
     "link": "https://pinterest.com"
   },
   {
     "name": "LinkedIn",
     "icon": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQyxt5q7brBCDrZR3kRQJoDDiymyaXF16PDFA&s",
+    "category": "Social",
     "description": "Professional networking",
     "link": "https://linkedin.com"
   },
   {
     "name": "Tumblr",
     "icon": "https://play-lh.googleusercontent.com/G4R3eZm3sDGJk0lVCOr72BwLFIYV0Jg5G7_PBOf9ZMpWwZjXaUdoZMyjFbJwxcmF5qBH",
+    "category": "Social",
     "description": "Microblogging platform",
     "link": "https://tumblr.com"
   },
   {
     "name": "Flickr",
     "icon": "https://media.licdn.com/dms/image/v2/C4D0BAQHgpt-I2P2SuA/company-logo_200_200/company-logo_200_200/0/1630570956303/flickr_logo?e=2147483647&v=beta&t=dYPXC9zy_rMCuFx1Fj4e3-IaduKVJTYSjoPxH3Ix67s",
+    "category": "Social",
     "description": "Photo sharing platform",
     "link": "https://flickr.com"
   },
   {
     "name": "Quora",
     "icon": "https://avatars.githubusercontent.com/u/68739?s=280&v=4",
+    "category": "Social",
     "description": "Q&A community",
     "link": "https://quora.com"
   }
