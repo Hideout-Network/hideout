@@ -1,4 +1,19 @@
 [
+{
+    "updateNumber": 6,
+    "version": "v1.1.1",
+    "updateDate": "2025-12-03",
+    "githubLink": "https://github.com/Hideout-Network/hideout/releases/tag/v1.1.1",
+    "changes": [
+      "⚙️ Updated settings UI.",
+      "🎮 Fixed sometimes you click a game and it does not choose the correct game.",
+      "🕹️ Added new games.",
+      "🌐 Changed browser to say 'Browser Under Maintenance' should be fixed later.",
+      "🏠 Updated home page UI.",
+      "📋 Updated menu at the bottom right of the page.",
+      "🧠 New memory feature in the AI page."
+    ]
+  },
   {
     "updateNumber": 5,
     "version": "v1.1.0",
