@@ -154,6 +154,7 @@ const Index = () => {
             </div>
             <div className="relative">
               {/* Animated glowing border line that travels around */}
+              <div className="search-border-glow-outer" />
               <div className="search-border-glow" />
               
               <Input 

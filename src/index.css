@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 /* Animated glowing border line that travels around search bar like a loading indicator */
-@keyframes border-rotate {
+@keyframes spin-border {
   0% {
     transform: rotate(0deg);
   }
@@ -17,22 +17,25 @@
   inset: -2px;
   border-radius: 1rem;
   overflow: hidden;
+  z-index: 0;
 }
 
 .search-border-glow::before {
   content: '';
   position: absolute;
-  inset: -50%;
+  width: 150%;
+  height: 150%;
+  top: -25%;
+  left: -25%;
   background: conic-gradient(
     from 0deg,
     transparent 0deg,
-    transparent 340deg,
-    hsl(var(--primary)) 350deg,
+    transparent 300deg,
+    hsl(var(--primary)) 330deg,
     hsl(var(--primary)) 360deg
   );
-  animation: border-rotate 3s linear infinite;
-  filter: blur(1px);
-  box-shadow: 0 0 20px hsl(var(--primary) / 0.6);
+  animation: spin-border 3s linear infinite;
+  filter: blur(2px);
 }
 
 .search-border-glow::after {
@@ -41,6 +44,35 @@
   inset: 2px;
   background: hsl(var(--card));
   border-radius: calc(1rem - 2px);
+  z-index: 1;
+}
+
+/* Glow effect for the search border */
+.search-border-glow-outer {
+  position: absolute;
+  inset: -8px;
+  border-radius: 1.5rem;
+  overflow: hidden;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.search-border-glow-outer::before {
+  content: '';
+  position: absolute;
+  width: 150%;
+  height: 150%;
+  top: -25%;
+  left: -25%;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0deg,
+    transparent 300deg,
+    hsl(var(--primary) / 0.4) 330deg,
+    hsl(var(--primary) / 0.4) 360deg
+  );
+  animation: spin-border 3s linear infinite;
+  filter: blur(15px);
 }
 
 /* Fullscreen iframe styles */
