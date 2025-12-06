@@ -14,42 +14,6 @@ export type Database = {
   }
   public: {
     Tables: {
-      chat_warnings: {
-        Row: {
-          created_at: string | null
-          id: string
-          last_message: string | null
-          last_message_time: string | null
-          timeout_until: string | null
-          updated_at: string | null
-          user_id: string | null
-          username: string
-          warning_count: number
-        }
-        Insert: {
-          created_at?: string | null
-          id?: string
-          last_message?: string | null
-          last_message_time?: string | null
-          timeout_until?: string | null
-          updated_at?: string | null
-          user_id?: string | null
-          username: string
-          warning_count?: number
-        }
-        Update: {
-          created_at?: string | null
-          id?: string
-          last_message?: string | null
-          last_message_time?: string | null
-          timeout_until?: string | null
-          updated_at?: string | null
-          user_id?: string | null
-          username?: string
-          warning_count?: number
-        }
-        Relationships: []
-      }
       global_chat: {
         Row: {
           created_at: string
