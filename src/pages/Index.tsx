@@ -7,6 +7,7 @@ import { HomeShortcuts } from "@/components/HomeShortcuts";
 import { usePageTitle } from "@/hooks/use-page-title";
 import updatesData from "@/jsons/updates.json";
 import { ChevronDown } from "lucide-react";
+import { Banner728x90, shouldShowAds } from "@/components/AdManager";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -176,6 +177,13 @@ const Index = () => {
           <HomeShortcuts />
         </main>
       </div>
+
+      {/* Ad Banner */}
+      {shouldShowAds() && (
+        <div className="w-full flex justify-center py-2">
+          <Banner728x90 />
+        </div>
+      )}
 
       {/* Footer - Center */}
       <footer className="py-4 text-center">

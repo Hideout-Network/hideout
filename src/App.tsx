@@ -23,6 +23,7 @@ import NotFound from "./pages/NotFound";
 import { GridBackground } from "./components/GridBackground";
 import { BatteryWarning } from "./components/BatteryWarning";
 import { GlobalElements } from "./components/GlobalElements";
+import { GlobalAdsLoader } from "./components/AdManager";
 
 type ThemesData = {
   site: string;
@@ -195,6 +196,7 @@ const App = () => {
         {customCursorEnabled && <CustomCursor smoothness={cursorSettings.smoothness} size={cursorSettings.size} />}
         <GridBackground />
         <BatteryWarning />
+        <GlobalAdsLoader />
         <Toaster />
         <Sonner />
         <UpdateDialog />
