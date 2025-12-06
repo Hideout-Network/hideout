@@ -27,7 +27,6 @@ import { GridBackground } from "@/components/GridBackground";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useThemeSystem } from "@/hooks/use-theme-system";
 import { cn } from "@/lib/utils";
-import { Banner728x90, shouldShowAds } from "@/components/AdManager";
 
 type SettingsData = {
   reducedMotion: boolean;
@@ -905,13 +904,6 @@ const SettingsPage = () => {
               </Card>
             </div>
           </div>
-          
-          {/* Ad Banner */}
-          {shouldShowAds() && (
-            <div className="mt-8 flex justify-center">
-              <Banner728x90 />
-            </div>
-          )}
         </div>
       </main>
 

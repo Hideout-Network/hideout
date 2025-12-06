@@ -12,7 +12,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { GlobalChat } from "@/components/GlobalChat";
 import { usePageTitle } from "@/hooks/use-page-title";
 import { GridBackground } from "@/components/GridBackground";
-import { Banner728x90, shouldShowAds } from "@/components/AdManager";
 import eruda from "eruda";
 
 // Browser configuration
@@ -42,11 +41,6 @@ const Browser = () => {
       <Button onClick={() => navigate('/')} variant="outline">
         Go Back
       </Button>
-      {shouldShowAds() && (
-        <div className="mt-8">
-          <Banner728x90 />
-        </div>
-      )}
     </div>
   );
   
