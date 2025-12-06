@@ -1,6 +1,6 @@
 // Comprehensive chat filter for blocking bad words, bypass attempts, and similar messages
 
-// List of severely inappropriate words (hashed/encoded for repo safety)
+// List of severely inappropriate words
 // This list includes common bypass patterns
 const BLOCKED_PATTERNS: RegExp[] = [
   // N-word and variations
@@ -76,9 +76,6 @@ const BLOCKED_PATTERNS: RegExp[] = [
   /kys/gi,
   /d[i!1][e3][\s]*b[i!1]tch/gi,
   /g[o0][\s]*d[i!1][e3]/gi,
-  
-  // Common bypass characters replacement
-  /[\(\)0-9@#$%^&*!|\/\\]+/g, // Pattern to help detect character substitution
 ];
 
 // Additional exact match blocked words (lowercase)
@@ -108,7 +105,6 @@ const BLOCKED_WORDS: Set<string> = new Set([
 function normalizeText(text: string): string {
   return text
     .toLowerCase()
-    // Replace common substitutions
     .replace(/[0@]/g, 'o')
     .replace(/[1!|l]/g, 'i')
     .replace(/3/g, 'e')
@@ -118,8 +114,8 @@ function normalizeText(text: string): string {
     .replace(/8/g, 'b')
     .replace(/9/g, 'g')
     .replace(/\*/g, '')
-    .replace(/[\s._\-]+/g, '') // Remove spaces and separators
-    .replace(/[^\w]/g, ''); // Remove non-alphanumeric
+    .replace(/[\s._\-]+/g, '')
+    .replace(/[^\w]/g, '');
 }
 
 // Check if message contains blocked content
@@ -160,7 +156,6 @@ export function isUsernameAppropriate(username: string): { valid: boolean; reaso
     return { valid: false, reason: 'Username contains inappropriate content' };
   }
   
-  // Additional username checks
   if (username.length < 3) {
     return { valid: false, reason: 'Username must be at least 3 characters' };
   }
@@ -169,7 +164,6 @@ export function isUsernameAppropriate(username: string): { valid: boolean; reaso
     return { valid: false, reason: 'Username must be 20 characters or less' };
   }
   
-  // Check for impersonation patterns
   if (/^(admin|moderator|mod|staff|owner|system|bot)$/i.test(username)) {
     return { valid: false, reason: 'Username cannot impersonate staff' };
   }
@@ -185,7 +179,6 @@ export function calculateSimilarity(str1: string, str2: string): number {
   if (s1 === s2) return 1;
   if (s1.length === 0 || s2.length === 0) return 0;
   
-  // Levenshtein distance
   const matrix: number[][] = [];
   
   for (let i = 0; i <= s1.length; i++) {
@@ -216,27 +209,92 @@ export function isTooSimilar(newMessage: string, previousMessage: string, thresh
   return calculateSimilarity(newMessage, previousMessage) >= threshold;
 }
 
-// Timeout durations in minutes (escalating)
-export const TIMEOUT_DURATIONS = [1, 10, 60, 360, 720, 1440]; // 1min, 10min, 1hr, 6hr, 12hr, 24hr
+// ============= LOCAL STORAGE BASED WARNINGS/TIMEOUTS =============
 
-// Get timeout duration based on warning count
-export function getTimeoutDuration(warningCount: number): number {
-  const index = Math.min(warningCount - 3, TIMEOUT_DURATIONS.length - 1);
-  return index >= 0 ? TIMEOUT_DURATIONS[index] : 0;
+const STORAGE_KEYS = {
+  WARNING_COUNT: 'hideout_chat_warning_count',
+  TIMEOUT_UNTIL: 'hideout_chat_timeout_until',
+  LAST_MESSAGE: 'hideout_chat_last_message',
+};
+
+// Timeout durations in milliseconds (escalating)
+const TIMEOUT_DURATIONS_MS = [
+  1 * 60 * 1000,        // 1 minute
+  10 * 60 * 1000,       // 10 minutes
+  60 * 60 * 1000,       // 1 hour
+  6 * 60 * 60 * 1000,   // 6 hours
+  12 * 60 * 60 * 1000,  // 12 hours
+  24 * 60 * 60 * 1000,  // 24 hours
+  48 * 60 * 60 * 1000,  // 48 hours
+  7 * 24 * 60 * 60 * 1000, // 1 week
+];
+
+// Get warning count from localStorage
+export function getWarningCount(): number {
+  try {
+    const count = localStorage.getItem(STORAGE_KEYS.WARNING_COUNT);
+    return count ? parseInt(count, 10) : 0;
+  } catch {
+    return 0;
+  }
+}
+
+// Set warning count in localStorage
+export function setWarningCount(count: number): void {
+  try {
+    localStorage.setItem(STORAGE_KEYS.WARNING_COUNT, count.toString());
+  } catch (e) {
+    console.error('Failed to save warning count:', e);
+  }
+}
+
+// Get timeout end timestamp from localStorage
+export function getTimeoutUntil(): number | null {
+  try {
+    const timeout = localStorage.getItem(STORAGE_KEYS.TIMEOUT_UNTIL);
+    if (timeout) {
+      const ts = parseInt(timeout, 10);
+      if (ts > Date.now()) {
+        return ts;
+      }
+      // Expired, clear it
+      localStorage.removeItem(STORAGE_KEYS.TIMEOUT_UNTIL);
+    }
+  } catch {
+    // ignore
+  }
+  return null;
+}
+
+// Set timeout in localStorage
+export function setTimeoutUntil(timestamp: number): void {
+  try {
+    localStorage.setItem(STORAGE_KEYS.TIMEOUT_UNTIL, timestamp.toString());
+  } catch (e) {
+    console.error('Failed to save timeout:', e);
+  }
 }
 
 // Check if user is currently timed out
-export function isTimedOut(timeoutUntil: string | null): boolean {
-  if (!timeoutUntil) return false;
-  return new Date(timeoutUntil) > new Date();
+export function isTimedOut(): { timedOut: boolean; remainingMs: number } {
+  const timeoutEnd = getTimeoutUntil();
+  if (timeoutEnd) {
+    const remaining = timeoutEnd - Date.now();
+    if (remaining > 0) {
+      return { timedOut: true, remainingMs: remaining };
+    }
+  }
+  return { timedOut: false, remainingMs: 0 };
 }
 
-// Get remaining timeout in human readable format
-export function getTimeoutRemaining(timeoutUntil: string): string {
-  const remaining = new Date(timeoutUntil).getTime() - Date.now();
-  if (remaining <= 0) return '';
+// Format remaining time for display
+export function formatTimeRemaining(ms: number): string {
+  if (ms <= 0) return '';
   
-  const minutes = Math.ceil(remaining / 60000);
+  const seconds = Math.ceil(ms / 1000);
+  if (seconds < 60) return `${seconds} second${seconds !== 1 ? 's' : ''}`;
+  
+  const minutes = Math.ceil(seconds / 60);
   if (minutes < 60) return `${minutes} minute${minutes !== 1 ? 's' : ''}`;
   
   const hours = Math.floor(minutes / 60);
@@ -244,4 +302,88 @@ export function getTimeoutRemaining(timeoutUntil: string): string {
   
   const days = Math.floor(hours / 24);
   return `${days} day${days !== 1 ? 's' : ''}`;
+}
+
+// Add a warning and potentially apply timeout
+export function addWarning(): { warningGiven: boolean; timeoutApplied: boolean; message: string } {
+  const currentCount = getWarningCount();
+  const newCount = currentCount + 1;
+  setWarningCount(newCount);
+  
+  // First two violations are just warnings
+  if (newCount <= 2) {
+    return {
+      warningGiven: true,
+      timeoutApplied: false,
+      message: `Warning ${newCount}/2: Please follow chat rules. Next violation will result in a timeout.`
+    };
+  }
+  
+  // Calculate timeout duration based on violation count (3rd violation = first timeout)
+  const timeoutIndex = Math.min(newCount - 3, TIMEOUT_DURATIONS_MS.length - 1);
+  const timeoutDuration = TIMEOUT_DURATIONS_MS[timeoutIndex];
+  const timeoutEnd = Date.now() + timeoutDuration;
+  
+  setTimeoutUntil(timeoutEnd);
+  
+  return {
+    warningGiven: true,
+    timeoutApplied: true,
+    message: `You have been timed out for ${formatTimeRemaining(timeoutDuration)} due to repeated violations.`
+  };
+}
+
+// Get last sent message from localStorage
+export function getLastMessage(): string | null {
+  try {
+    return localStorage.getItem(STORAGE_KEYS.LAST_MESSAGE);
+  } catch {
+    return null;
+  }
+}
+
+// Save last sent message to localStorage
+export function setLastMessage(message: string): void {
+  try {
+    localStorage.setItem(STORAGE_KEYS.LAST_MESSAGE, message);
+  } catch (e) {
+    console.error('Failed to save last message:', e);
+  }
+}
+
+// Validate a message before sending (client-side)
+export interface ValidationResult {
+  valid: boolean;
+  error?: string;
+}
+
+export function validateMessage(message: string): ValidationResult {
+  // Check timeout
+  const timeoutStatus = isTimedOut();
+  if (timeoutStatus.timedOut) {
+    return {
+      valid: false,
+      error: `You are timed out. Try again in ${formatTimeRemaining(timeoutStatus.remainingMs)}.`
+    };
+  }
+  
+  // Check empty
+  if (!message.trim()) {
+    return { valid: false, error: 'Message cannot be empty.' };
+  }
+  
+  // Check bad words
+  const blockedCheck = containsBlockedContent(message);
+  if (blockedCheck.blocked) {
+    const warningResult = addWarning();
+    return { valid: false, error: warningResult.message };
+  }
+  
+  // Check spam (similarity to last message)
+  const lastMsg = getLastMessage();
+  if (lastMsg && isTooSimilar(message, lastMsg)) {
+    return { valid: false, error: "Please don't send the same message repeatedly." };
+  }
+  
+  return { valid: true };
 }
