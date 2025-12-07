@@ -103,15 +103,17 @@ export const Banner160x600 = ({ className = '' }: { className?: string }) => {
   );
 };
 
-// Sticky bottom banner component
+// Sticky bottom banner component - centered ad only, no full-width background
 export const StickyBottomBanner = () => {
   const config = getAdConfig();
   
   if (!config) return null;
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50 flex justify-center bg-background/80 backdrop-blur-sm border-t border-border py-2">
-      <Banner728x90 />
+    <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-40 pointer-events-none">
+      <div className="pointer-events-auto">
+        <Banner728x90 />
+      </div>
     </div>
   );
 };
