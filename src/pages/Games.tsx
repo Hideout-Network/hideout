@@ -322,8 +322,7 @@ const Games = () => {
   const displayedGames = filteredGames.slice(0, displayedCount);
   const hasMoreGames = displayedCount < filteredGames.length;
 
-  // Calculate how many 1x1 games fit per row (approximately 13 based on grid)
-  // Insert a 728x90 banner ad every 13 rows of 1x1 games
+  // Insert a 728x90 banner ad every 10 rows of 1x1 games (~100 grid units)
   const gamesWithAds = useMemo(() => {
     if (!shouldShowAds()) return displayedGames.map(game => ({ type: 'game' as const, game }));
     
@@ -334,12 +333,12 @@ const Games = () => {
       result.push({ type: 'game', game });
       
       // Count rows based on grid span (1x1 = 1 unit, 2x2 = 4 units, 3x3 = 9 units)
-      // Approximate 13 games per row for 1x1 tiles
+      // Approximate 10 games per row for 1x1 tiles
       const gridUnits = game.gridSpan?.includes('3x3') ? 9 : game.gridSpan?.includes('2x2') ? 4 : 1;
       rowCounter += gridUnits;
       
-      // Insert ad every ~169 grid units (13 rows × 13 columns)
-      if (rowCounter >= 169 && index < displayedGames.length - 1) {
+      // Insert ad every ~100 grid units (10 rows × 10 columns)
+      if (rowCounter >= 100 && index < displayedGames.length - 1) {
         result.push({ type: 'ad', adType: '728x90', key: `ad-row-${index}` });
         rowCounter = 0;
       }
