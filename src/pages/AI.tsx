@@ -949,14 +949,14 @@ const AI = () => {
               </Button>
             </div>
           </div>
-          
-          {/* Ad Banner Below Input */}
-          {shouldShowAds() && messages.length === 0 && (
-            <div className="mt-6 flex justify-center">
-              <Banner728x90 />
-            </div>
-          )}
         </div>
+        
+        {/* Ad Banner Below Input - Outside the prompt box */}
+        {shouldShowAds() && messages.length === 0 && (
+          <div className="mt-6 flex justify-center">
+            <Banner728x90 />
+          </div>
+        )}
       </div>
 
       {/* API Key Dialog */}
