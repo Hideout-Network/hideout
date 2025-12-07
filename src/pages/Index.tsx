@@ -114,10 +114,10 @@ const Index = () => {
       <Navigation />
 
       {/* Main Content - Centered with Side Ads */}
-      <div className="flex-1 flex items-center justify-center px-4 sm:px-6">
-        {/* Left Side Ad - Hidden on smaller screens */}
+      <div className="flex-1 flex items-center justify-center px-4 sm:px-6 relative">
+        {/* Left Side Ad - Fixed position on large screens */}
         {shouldShowAds() && (
-          <div className="hidden xl:flex items-center justify-center mr-4">
+          <div className="hidden lg:block fixed left-4 top-1/2 -translate-y-1/2 z-10">
             <Banner160x600 />
           </div>
         )}
@@ -184,9 +184,9 @@ const Index = () => {
           <HomeShortcuts />
         </main>
         
-        {/* Right Side Ad - Hidden on smaller screens */}
+        {/* Right Side Ad - Fixed position on large screens */}
         {shouldShowAds() && (
-          <div className="hidden xl:flex items-center justify-center ml-4">
+          <div className="hidden lg:block fixed right-4 top-1/2 -translate-y-1/2 z-10">
             <Banner160x600 />
           </div>
         )}
