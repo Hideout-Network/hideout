@@ -34,6 +34,11 @@ export const UpdateDialog = () => {
           <DialogTitle className="text-center text-2xl font-bold">
             Update ({latestUpdate.version})
           </DialogTitle>
+          {latestUpdate.bigText && (
+            <p className="text-center text-xl font-bold text-primary mt-2">
+              {latestUpdate.bigText}
+            </p>
+          )}
         </DialogHeader>
         
         <div className="space-y-4">

@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { MessageSquare, X, Send } from "lucide-react";
+import { MessageSquare, X, Send, Reply } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -13,6 +13,15 @@ interface ChatMessage {
   message: string;
   created_at: string;
   source: string;
+  reply_to_id?: number;
+  reply_to_username?: string;
+  reply_to_message?: string;
+}
+
+interface ReplyingTo {
+  id: number;
+  username: string;
+  message: string;
 }
 
 export const GlobalChat = () => {
@@ -23,6 +32,8 @@ export const GlobalChat = () => {
   const [isSettingUsername, setIsSettingUsername] = useState(false);
   const [tempUsername, setTempUsername] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [replyingTo, setReplyingTo] = useState<ReplyingTo | null>(null);
+  const [hoveredMessageId, setHoveredMessageId] = useState<number | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Load username from localStorage
@@ -38,10 +49,11 @@ export const GlobalChat = () => {
     if (!isOpen || !supabase) return;
 
     const fetchMessages = async () => {
+      // Fetch latest 100 messages by ordering descending then reversing
       const { data, error } = await supabase
         .from("global_chat")
         .select("*")
-        .order("created_at", { ascending: true })
+        .order("created_at", { ascending: false })
         .limit(100);
 
       if (error) {
@@ -49,7 +61,8 @@ export const GlobalChat = () => {
         return;
       }
 
-      setMessages(data || []);
+      // Reverse to show oldest first in the UI
+      setMessages((data || []).reverse());
     };
 
     fetchMessages();
@@ -93,7 +106,12 @@ export const GlobalChat = () => {
   };
 
   const handleSendMessage = async () => {
-    if (!newMessage.trim() || !username || !supabase) return;
+    if (!newMessage.trim() || !username) return;
+    
+    if (!supabase) {
+      toast.error("Chat service unavailable");
+      return;
+    }
 
     // Validate message locally
     const validation = validateMessage(newMessage);
@@ -105,27 +123,52 @@ export const GlobalChat = () => {
     setIsLoading(true);
 
     try {
-      const { error } = await supabase.from("global_chat").insert({
+      console.log("Sending message:", { username, message: newMessage.trim(), replyingTo });
+      
+      const messageData: any = {
         username,
         message: newMessage.trim(),
         source: "website",
-      });
+      };
+
+      // Add reply data if replying
+      if (replyingTo) {
+        messageData.reply_to_id = replyingTo.id;
+        messageData.reply_to_username = replyingTo.username;
+        messageData.reply_to_message = replyingTo.message.substring(0, 100); // Limit reply preview
+      }
+
+      const { data, error } = await supabase.from("global_chat").insert(messageData).select();
 
       if (error) {
         console.error("Error sending message:", error);
-        toast.error("Failed to send message");
+        toast.error(`Failed to send: ${error.message}`);
         return;
       }
 
+      console.log("Message sent successfully:", data);
       // Record successfully sent message for spam detection
       setLastMessage(newMessage.trim());
       setNewMessage("");
+      setReplyingTo(null); // Clear reply state
     } catch (err) {
       console.error("Error sending message:", err);
       toast.error("Failed to send message");
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleReply = (msg: ChatMessage) => {
+    setReplyingTo({
+      id: msg.id,
+      username: msg.username,
+      message: msg.message,
+    });
+  };
+
+  const cancelReply = () => {
+    setReplyingTo(null);
   };
 
   const formatTime = (dateString: string) => {
@@ -149,18 +192,22 @@ export const GlobalChat = () => {
     return null;
   };
 
+  const isOwnMessage = (msgUsername: string) => {
+    return msgUsername.toLowerCase() === username.toLowerCase();
+  };
+
   return (
     <>
       <Button
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-4 left-4 rounded-full w-14 h-14 shadow-lg z-50"
+        className="fixed bottom-4 left-4 rounded-full w-14 h-14 shadow-lg z-[9999]"
         size="icon"
       >
         <MessageSquare className="h-6 w-6" />
       </Button>
 
       {isOpen && (
-        <div className="fixed bottom-20 left-4 w-96 max-w-[calc(100vw-2rem)] h-[400px] bg-background border border-border rounded-lg shadow-xl flex flex-col z-50">
+        <div className="fixed bottom-20 left-4 w-[28rem] md:w-[32rem] max-w-[calc(100vw-2rem)] h-[calc(100vh-6rem)] max-h-[600px] bg-background border border-border rounded-lg shadow-xl flex flex-col z-[9999]">
           <div className="flex items-center justify-between p-4 border-b border-border">
             <h3 className="font-semibold">Global Chat</h3>
             <Button
@@ -216,33 +263,93 @@ export const GlobalChat = () => {
                       No messages yet. Be the first to say something!
                     </p>
                   ) : (
-                    messages.map((msg) => (
-                      <div key={msg.id} className="text-sm">
-                        <div className="flex items-center gap-1 flex-wrap">
-                          <span className="font-semibold text-foreground">
-                            {msg.username}
-                          </span>
-                          {getSourceBadge(msg.source)}
-                          <span className="text-xs text-muted-foreground">
-                            {formatTime(msg.created_at)}
-                          </span>
+                    messages.map((msg) => {
+                      const isOwn = isOwnMessage(msg.username);
+                      const isHighlighted = replyingTo?.id === msg.id;
+                      
+                      return (
+                        <div 
+                          key={msg.id} 
+                          className={`text-sm relative group ${isOwn ? 'flex flex-col items-end' : 'flex flex-col items-start'}`}
+                          onMouseEnter={() => setHoveredMessageId(msg.id)}
+                          onMouseLeave={() => setHoveredMessageId(null)}
+                        >
+                          {/* Reply reference */}
+                          {msg.reply_to_username && msg.reply_to_message && (
+                            <div className={`text-xs text-muted-foreground mb-1 flex items-center gap-1 ${isOwn ? 'justify-end' : 'justify-start'}`}>
+                              <Reply className="w-3 h-3" />
+                              <span>replied to <span className="font-semibold">{msg.reply_to_username}</span>:</span>
+                              <span className="truncate max-w-[150px] opacity-70">{msg.reply_to_message}</span>
+                            </div>
+                          )}
+                          
+                          <div 
+                            className={`relative max-w-[85%] min-w-[80px] px-3 py-2 rounded-lg transition-colors ${
+                              isHighlighted 
+                                ? 'bg-primary/20 ring-2 ring-primary' 
+                                : isOwn 
+                                  ? 'bg-primary' 
+                                  : 'bg-muted'
+                            }`}
+                          >
+                            <div className={`flex items-center gap-1 flex-wrap ${isOwn ? 'justify-end' : 'justify-start'}`}>
+                              <span className={`font-semibold whitespace-nowrap ${isOwn ? 'text-primary-foreground' : 'text-foreground'}`}>
+                                {msg.username}
+                              </span>
+                              {getSourceBadge(msg.source)}
+                              <span className={`text-xs whitespace-nowrap ${isOwn ? 'text-primary-foreground/70' : 'text-muted-foreground'}`}>
+                                {formatTime(msg.created_at)}
+                              </span>
+                            </div>
+                            <p className={`break-words ${isOwn ? 'text-primary-foreground text-right' : 'text-foreground/90'}`}>
+                              {msg.message}
+                            </p>
+                            
+                            {/* Reply button on hover */}
+                            {hoveredMessageId === msg.id && (
+                              <button
+                                onClick={() => handleReply(msg)}
+                                className={`absolute top-1/2 -translate-y-1/2 p-1 rounded hover:bg-background/20 transition-colors ${
+                                  isOwn ? '-left-8' : '-right-8'
+                                }`}
+                                title="Reply"
+                              >
+                                <Reply className="w-4 h-4 text-muted-foreground hover:text-foreground" />
+                              </button>
+                            )}
+                          </div>
                         </div>
-                        <p className="text-foreground/90 break-words">
-                          {msg.message}
-                        </p>
-                      </div>
-                    ))
+                      );
+                    })
                   )}
                   <div ref={messagesEndRef} />
                 </div>
               </ScrollArea>
 
               <div className="p-4 border-t border-border">
+                {/* Reply indicator */}
+                {replyingTo && (
+                  <div className="flex items-center justify-between mb-2 px-2 py-1.5 bg-muted rounded-lg text-sm">
+                    <div className="flex items-center gap-2 overflow-hidden">
+                      <Reply className="w-4 h-4 text-primary flex-shrink-0" />
+                      <span className="text-muted-foreground">Replying to</span>
+                      <span className="font-semibold text-foreground">{replyingTo.username}</span>
+                      <span className="text-muted-foreground truncate">{replyingTo.message}</span>
+                    </div>
+                    <button
+                      onClick={cancelReply}
+                      className="p-1 hover:bg-background rounded transition-colors flex-shrink-0"
+                    >
+                      <X className="w-4 h-4 text-muted-foreground hover:text-foreground" />
+                    </button>
+                  </div>
+                )}
+                
                 <div className="flex gap-2">
                   <Input
                     value={newMessage}
                     onChange={(e) => setNewMessage(e.target.value)}
-                    placeholder="Type a message..."
+                    placeholder={replyingTo ? `Reply to ${replyingTo.username}...` : "Type a message..."}
                     onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && handleSendMessage()}
                     disabled={isLoading}
                   />
@@ -254,8 +361,18 @@ export const GlobalChat = () => {
                     <Send className="h-4 w-4" />
                   </Button>
                 </div>
-                <p className="text-xs text-muted-foreground mt-2">
+                <p className="text-xs text-muted-foreground mt-2 flex items-center gap-2">
                   Chatting as <span className="font-semibold">{username}</span>
+                  <button
+                    onClick={() => {
+                      setTempUsername(username);
+                      setUsername("");
+                      setIsSettingUsername(true);
+                    }}
+                    className="text-primary hover:underline"
+                  >
+                    Change
+                  </button>
                 </p>
               </div>
             </>

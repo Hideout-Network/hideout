@@ -22,9 +22,7 @@ type Shortcut = {
 const DEFAULT_SHORTCUTS: Shortcut[] = [
   { id: "google", name: "Google", url: "https://google.com", icon: "https://www.google.com/favicon.ico" },
   { id: "youtube", name: "YouTube", url: "https://youtube.com", icon: "https://www.youtube.com/favicon.ico" },
-  { id: "tiktok", name: "TikTok", url: "https://tiktok.com", icon: "https://www.tiktok.com/favicon.ico" },
-  { id: "twitter", name: "Twitter", url: "https://twitter.com", icon: "https://abs.twimg.com/favicons/twitter.3.ico" },
-  { id: "instagram", name: "Instagram", url: "https://instagram.com", icon: "https://www.google.com/s2/favicons?domain=instagram.com&sz=64" },
+  { id: "discord", name: "Discord", url: "https://discord.com", icon: "https://www.google.com/s2/favicons?domain=discord.com&sz=64" },
 ];
 
 const STORAGE_KEY = "hideout_shortcuts";
@@ -122,29 +120,29 @@ export const HomeShortcuts = () => {
   };
 
   return (
-    <div className="flex flex-wrap justify-center gap-3 mt-4">
+    <div className="flex items-center justify-center gap-8 mt-4">
       {shortcuts.map((shortcut) => (
         <div
           key={shortcut.id}
-          className="relative group"
+          className="relative group flex flex-col items-center gap-2"
         >
           <button
             onClick={() => handleShortcutClick(shortcut.url)}
-            className="w-20 h-20 bg-card hover:bg-card/80 border border-border rounded-xl flex flex-col items-center justify-center gap-2 transition-all hover:scale-105 hover:border-primary/50"
+            className="w-14 h-14 bg-muted/50 hover:bg-muted rounded-full flex items-center justify-center transition-all hover:scale-110"
           >
             <img
               src={getFaviconUrl(shortcut) || ""}
               alt={shortcut.name}
-              className="w-8 h-8 rounded"
+              className="w-7 h-7 rounded-sm"
               onError={(e) => {
                 const target = e.target as HTMLImageElement;
                 target.style.display = "none";
               }}
             />
-            <span className="text-xs text-foreground truncate w-full px-1 text-center">
-              {shortcut.name}
-            </span>
           </button>
+          <span className="text-sm text-muted-foreground">
+            {shortcut.name}
+          </span>
           
           {/* Delete button on hover */}
           <button
@@ -152,9 +150,9 @@ export const HomeShortcuts = () => {
               e.stopPropagation();
               handleRemoveShortcut(shortcut.id);
             }}
-            className="absolute -top-2 -right-2 w-6 h-6 bg-destructive rounded-full flex items-center justify-center text-destructive-foreground hover:bg-destructive/80 transition-all opacity-0 group-hover:opacity-100"
+            className="absolute -top-1 -right-1 w-5 h-5 bg-destructive rounded-full flex items-center justify-center text-destructive-foreground hover:bg-destructive/80 transition-all opacity-0 group-hover:opacity-100"
           >
-            <X className="w-4 h-4" />
+            <X className="w-3 h-3" />
           </button>
         </div>
       ))}
@@ -162,10 +160,12 @@ export const HomeShortcuts = () => {
       {/* Add Shortcut Button */}
       <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
         <DialogTrigger asChild>
-          <button className="w-20 h-20 bg-card hover:bg-card/80 border border-border border-dashed rounded-xl flex flex-col items-center justify-center gap-2 transition-all hover:scale-105 hover:border-primary/50">
-            <Plus className="w-6 h-6 text-muted-foreground" />
-            <span className="text-xs text-muted-foreground">Add</span>
-          </button>
+          <div className="flex flex-col items-center gap-2 cursor-pointer group">
+            <div className="w-14 h-14 bg-muted/30 hover:bg-muted/50 rounded-full flex items-center justify-center transition-all group-hover:scale-110 border border-dashed border-muted-foreground/30">
+              <Plus className="w-6 h-6 text-muted-foreground" />
+            </div>
+            <span className="text-sm text-muted-foreground">New</span>
+          </div>
         </DialogTrigger>
         <DialogContent>
           <DialogHeader>

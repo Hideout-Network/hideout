@@ -36,8 +36,30 @@ export const ContextMenu = ({
   const [executedAddons, setExecutedAddons] = useState<Record<string, boolean>>({});
   const [showAddonSubmenu, setShowAddonSubmenu] = useState(false);
   const [hoveredAddonId, setHoveredAddonId] = useState<string | null>(null);
+  const [cloakSettings, setCloakSettings] = useState({
+    showAboutBlankInContextMenu: true,
+    showBlobInContextMenu: true,
+    showDataInContextMenu: false,
+  });
 
   const isGamePage = location.pathname.startsWith("/games");
+
+  useEffect(() => {
+    // Load cloak settings from localStorage
+    const savedSettings = localStorage.getItem('hideout_settings');
+    if (savedSettings) {
+      try {
+        const settings = JSON.parse(savedSettings);
+        setCloakSettings({
+          showAboutBlankInContextMenu: settings.showAboutBlankInContextMenu !== false,
+          showBlobInContextMenu: settings.showBlobInContextMenu !== false,
+          showDataInContextMenu: settings.showDataInContextMenu === true,
+        });
+      } catch (e) {
+        console.error('Failed to parse settings:', e);
+      }
+    }
+  }, []);
 
   useEffect(() => {
     // Fetch addons data and load installed addons
@@ -111,6 +133,74 @@ export const ContextMenu = ({
       `);
       aboutBlankWindow.document.close();
     }
+    onClose();
+  };
+
+  const handleOpenInBlob = () => {
+    const currentUrl = window.location.href;
+    
+    // Load settings from localStorage
+    const savedSettings = localStorage.getItem('hideout_settings');
+    let favicon = '';
+    let tabName = 'Hideout';
+    
+    if (savedSettings) {
+      try {
+        const settings = JSON.parse(savedSettings);
+        favicon = settings.blobFavicon || '';
+        tabName = settings.blobTabName || 'Hideout';
+      } catch (e) {
+        console.error('Failed to parse settings:', e);
+      }
+    }
+    
+    const htmlContent = `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <title>${tabName}</title>
+          ${favicon ? `<link rel="icon" href="${favicon}" type="image/x-icon">` : ''}
+          <style>
+            * { margin: 0; padding: 0; box-sizing: border-box; }
+            html, body { width: 100%; height: 100%; overflow: hidden; }
+            iframe { width: 100%; height: 100%; border: none; }
+          </style>
+        </head>
+        <body>
+          <iframe src="${currentUrl}"></iframe>
+        </body>
+      </html>
+    `;
+
+    const blob = new Blob([htmlContent], { type: "text/html" });
+    const blobUrl = URL.createObjectURL(blob);
+    window.open(blobUrl, "_blank");
+    onClose();
+  };
+
+  const handleOpenInData = () => {
+    const currentUrl = window.location.href;
+    
+    // Load settings from localStorage
+    const savedSettings = localStorage.getItem('hideout_settings');
+    let favicon = '';
+    let tabName = 'Hideout';
+    
+    if (savedSettings) {
+      try {
+        const settings = JSON.parse(savedSettings);
+        favicon = settings.dataFavicon || '';
+        tabName = settings.dataTabName || 'Hideout';
+      } catch (e) {
+        console.error('Failed to parse settings:', e);
+      }
+    }
+    
+    const faviconTag = favicon ? `<link rel="icon" href="${favicon}" type="image/x-icon">` : '';
+    const htmlContent = `<html><head><title>${tabName}</title>${faviconTag}<style>html,body{margin:0;height:100%;}iframe{border:none;width:100%;height:100%;}</style></head><body><iframe src="${currentUrl}"></iframe></body></html>`;
+    const dataUrl = `data:text/html,${encodeURIComponent(htmlContent)}`;
+    
+    window.open(dataUrl, "_blank");
     onClose();
   };
 
@@ -248,15 +338,39 @@ export const ContextMenu = ({
         className="fixed z-[9999] bg-card border border-border rounded-lg shadow-2xl py-1 min-w-[220px] backdrop-blur-xl"
         style={{ top: y, left: x }}
       >
-        <button
-          onClick={handleOpenInAboutBlank}
-          className="w-full px-4 py-2.5 text-left text-sm hover:bg-muted/50 flex items-center gap-3 transition-colors"
-        >
-          <Code className="w-4 h-4" />
-          Open in about:blank
-        </button>
+        {cloakSettings.showAboutBlankInContextMenu && (
+          <button
+            onClick={handleOpenInAboutBlank}
+            className="w-full px-4 py-2.5 text-left text-sm hover:bg-muted/50 flex items-center gap-3 transition-colors"
+          >
+            <Code className="w-4 h-4" />
+            Open in about:blank
+          </button>
+        )}
 
-        <div className="my-1 border-t border-border" />
+        {cloakSettings.showBlobInContextMenu && (
+          <button
+            onClick={handleOpenInBlob}
+            className="w-full px-4 py-2.5 text-left text-sm hover:bg-muted/50 flex items-center gap-3 transition-colors"
+          >
+            <Code className="w-4 h-4" />
+            Open in Blob
+          </button>
+        )}
+
+        {cloakSettings.showDataInContextMenu && (
+          <button
+            onClick={handleOpenInData}
+            className="w-full px-4 py-2.5 text-left text-sm hover:bg-muted/50 flex items-center gap-3 transition-colors"
+          >
+            <Code className="w-4 h-4" />
+            Open in Data
+          </button>
+        )}
+
+        {(cloakSettings.showAboutBlankInContextMenu || cloakSettings.showBlobInContextMenu || cloakSettings.showDataInContextMenu) && (
+          <div className="my-1 border-t border-border" />
+        )}
 
         <div className="relative">
           <button
