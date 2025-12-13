@@ -2,76 +2,70 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Animated glowing border line that travels around search bar */
-@keyframes border-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+
+/* Hover glow effect for search bar */
+.search-container {
+  position: relative;
+  z-index: 1;
 }
 
-.search-border-glow {
-  position: absolute;
-  inset: -2px;
+.search-input-wrapper {
+  position: relative;
   border-radius: 1rem;
   overflow: hidden;
-  z-index: 0;
+}
+
+.search-cursor-glow {
+  position: absolute;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: radial-gradient(circle, hsl(var(--primary) / 0.6), hsl(var(--primary) / 0.2) 50%, transparent 70%);
   pointer-events: none;
+  z-index: 1;
+  filter: blur(15px);
+  transform: translate(-50%, -50%);
+  transition: opacity 0.2s ease;
 }
 
-.search-border-glow::before {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 200%;
-  height: 200%;
-  margin-left: -100%;
-  margin-top: -100%;
-  background: conic-gradient(
-    from 0deg,
-    transparent 0deg 345deg,
-    hsl(var(--primary)) 345deg 360deg
-  );
-  animation: border-spin 3s linear infinite;
+/* Global clickable hover scale effect - exclude elements with translate transforms */
+button:not([class*="translate"]),
+a:not([class*="translate"]),
+[role="button"]:not([class*="translate"]),
+.clickable:not([class*="translate"]) {
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
 }
 
-.search-border-glow::after {
-  content: '';
-  position: absolute;
-  inset: 2px;
-  background: hsl(var(--card));
-  border-radius: calc(1rem - 2px);
+button:not([class*="translate"]):hover,
+a:not([class*="translate"]):hover,
+[role="button"]:not([class*="translate"]):hover,
+.clickable:not([class*="translate"]):hover {
+  transform: scale(1.03);
 }
 
-/* Outer glow effect */
-.search-border-glow-outer {
-  position: absolute;
-  inset: -6px;
-  border-radius: 1.25rem;
-  overflow: hidden;
-  z-index: -1;
-  pointer-events: none;
+button:not([class*="translate"]):active,
+a:not([class*="translate"]):active,
+[role="button"]:not([class*="translate"]):active,
+.clickable:not([class*="translate"]):active {
+  transform: scale(0.98);
 }
 
-.search-border-glow-outer::before {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 200%;
-  height: 200%;
-  margin-left: -100%;
-  margin-top: -100%;
-  background: conic-gradient(
-    from 0deg,
-    transparent 0deg 345deg,
-    hsl(var(--primary) / 0.5) 345deg 360deg
-  );
-  animation: border-spin 3s linear infinite;
-  filter: blur(8px);
+/* For elements with transforms, use a wrapper or preserve the transform */
+.search-container button[type="submit"] {
+  transition: background-color 0.2s ease, box-shadow 0.2s ease !important;
+}
+
+.search-container button[type="submit"]:hover {
+  transform: translateY(-50%) scale(1.03) !important;
+}
+
+.search-container button[type="submit"]:active {
+  transform: translateY(-50%) scale(0.98) !important;
+}
+
+/* Prevent dropdown trigger from moving on hover */
+.search-container [data-radix-collection-item] {
+  transform: none !important;
 }
 
 /* Fullscreen iframe styles */
